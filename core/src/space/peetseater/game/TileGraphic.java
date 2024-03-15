@@ -20,7 +20,7 @@ public class TileGraphic {
 
     private Texture makeTexture() {
         Pixmap pixmap = new Pixmap(TILESIZE, TILESIZE, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.MAROON);
+        pixmap.setColor(TileType.colorFor(tileType));
         pixmap.fill();
         Texture texture = new Texture(pixmap);
         pixmap.dispose();
