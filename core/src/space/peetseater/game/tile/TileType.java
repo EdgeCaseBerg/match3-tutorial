@@ -1,4 +1,4 @@
-package space.peetseater.game;
+package space.peetseater.game.tile;
 
 import com.badlogic.gdx.graphics.Color;
 
