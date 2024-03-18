@@ -37,7 +37,7 @@ public class TileGraphic {
 
     public void render(float delta, SpriteBatch batch) {
         update(delta);
-        batch.draw(texture, movablePoint.getPosition().x, movablePoint.getPosition().y);
+        batch.draw(texture, movablePoint.getPosition().x, movablePoint.getPosition().y, 1, 1);
     }
 
     public void update(float delta) {
