@@ -1,14 +1,17 @@
 package space.peetseater.game.tile;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import space.peetseater.game.TestTexture;
 import space.peetseater.game.shared.Command;
 import space.peetseater.game.states.LinearMovementBehavior;
 import space.peetseater.game.shared.MovablePoint;
 import space.peetseater.game.tile.states.NotSelected;
+
+import static space.peetseater.game.Constants.TILE_UNIT_HEIGHT;
+import static space.peetseater.game.Constants.TILE_UNIT_WIDTH;
 
 public class TileGraphic {
     public static int TILESIZE = 70;
@@ -20,24 +23,15 @@ public class TileGraphic {
 
     public TileGraphic(Vector2 position, TileType tileType) {
         this.tileType = tileType;
-        this.texture = makeTexture(TileType.colorFor(tileType));
+        this.texture = TestTexture.makeTexture(TileType.colorFor(tileType));
         this.state = NotSelected.getInstance();
         this.movablePoint = new MovablePoint(position);
         this.positionState = new LinearMovementBehavior(this.movablePoint);
     }
 
-    private Texture makeTexture(Color color) {
-        Pixmap pixmap = new Pixmap(TILESIZE, TILESIZE, Pixmap.Format.RGBA8888);
-        pixmap.setColor(color);
-        pixmap.fill();
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        return texture;
-    }
-
     public void render(float delta, SpriteBatch batch) {
         update(delta);
-        batch.draw(texture, movablePoint.getPosition().x, movablePoint.getPosition().y, 1, 1);
+        batch.draw(texture, movablePoint.getPosition().x, movablePoint.getPosition().y, TILE_UNIT_WIDTH, TILE_UNIT_HEIGHT);
     }
 
     public void update(float delta) {
@@ -59,19 +53,19 @@ public class TileGraphic {
     public void useSelectedTexture() {
         Color color = TileType.colorFor(tileType);
         texture.dispose();
-        texture = makeTexture(color.cpy().mul(1, 1, 1, 0.8f));
+        texture = TestTexture.makeTexture(color.cpy().mul(1, 1, 1, 0.8f));
     }
 
     public void useNotSelectedTexture() {
         Color color = TileType.colorFor(tileType);
         texture.dispose();
-        texture = makeTexture(color);
+        texture = TestTexture.makeTexture(color);
     }
 
     public void useMatchedTexture() {
         Color color = TileType.colorFor(tileType);
         texture.dispose();
-        texture = makeTexture(color.cpy().mul(1, 1, 1, 0.5f));
+        texture = TestTexture.makeTexture(color.cpy().mul(1, 1, 1, 0.5f));
     }
 
     public void setState(TileGraphicState newState) {
