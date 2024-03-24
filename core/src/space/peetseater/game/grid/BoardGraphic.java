@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import space.peetseater.game.Constants;
 import space.peetseater.game.TestTexture;
 import space.peetseater.game.shared.MovablePoint;
 import space.peetseater.game.tile.TileGraphic;
@@ -24,7 +25,7 @@ public class BoardGraphic {
     }
 
     protected void initializeGrid(GameGrid<TileType> sourceOfTruth) {
-        float gutter = 0.2f;
+        float gutter = Constants.BOARD_UNIT_GUTTER;
         for (GridSpace<TileGraphic> tileGraphicGameGrid : gameGrid) {
             GridSpace<TileType> tokenSpace = sourceOfTruth.getTile(tileGraphicGameGrid.getRow(), tileGraphicGameGrid.getColumn());
 
@@ -54,6 +55,12 @@ public class BoardGraphic {
                 tileGraphicGridSpace.getValue().update(delta);
             }
         }
+    }
+
+    public void replaceTile(int row, int column, TileType tileType) {
+        GridSpace<TileGraphic> space = this.gameGrid.getTile(row, column);
+        Vector2 position = space.getValue().getMovablePoint();
+        space.setValue(new TileGraphic(position, tileType));
     }
 
 }

@@ -7,14 +7,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import space.peetseater.game.grid.BoardGraphic;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
+import space.peetseater.game.tile.NextTileAlgorithms;
 import space.peetseater.game.tile.TileType;
+import space.peetseater.game.token.TokenGeneratorAlgorithm;
 
 public class Match3Game extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -23,18 +24,20 @@ public class Match3Game extends ApplicationAdapter {
 	private BitmapFont font;
 	static public int GAME_WIDTH = 16;
 	static public int GAME_HEIGHT = 10;
-
-
 	private OrthographicCamera camera;
 	private FitViewport viewport;
+	private TokenGeneratorAlgorithm<TileType> tokenAlgorithm;
+
+	String algo = "WillNotMatch";
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		Vector2 boardPosition = new Vector2(.1f,.1f);
 		this.tokenGrid = new GameGrid<>(Constants.TOKENS_PER_ROW,Constants.TOKENS_PER_COLUMN);
+		tokenAlgorithm = new NextTileAlgorithms.WillNotMatch(tokenGrid);
 		for (GridSpace<TileType> gridSpace : tokenGrid) {
-			gridSpace.setValue(TileType.values()[(MathUtils.random(TileType.values().length - 1))]);
+			gridSpace.setValue(tokenAlgorithm.next(gridSpace.getRow(), gridSpace.getColumn()));
 		}
 		boardGraphic = new BoardGraphic(boardPosition, tokenGrid);
 		font = new BitmapFont();
@@ -50,6 +53,25 @@ public class Match3Game extends ApplicationAdapter {
 			Gdx.app.exit();
 		}
 
+		if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+			tokenAlgorithm = new NextTileAlgorithms.WillNotMatch(tokenGrid);
+			algo = "WillNotMatch";
+			for (GridSpace<TileType> space : tokenGrid) {
+				TileType next = tokenAlgorithm.next(space.getRow(), space.getColumn());
+				space.setValue(next);
+				boardGraphic.replaceTile(space.getRow(), space.getColumn(), next);
+			}
+		}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
+			tokenAlgorithm = new NextTileAlgorithms.LikelyToMatch(tokenGrid);
+			for (GridSpace<TileType> space : tokenGrid) {
+				TileType next = tokenAlgorithm.next(space.getRow(), space.getColumn());
+				space.setValue(next);
+				boardGraphic.replaceTile(space.getRow(), space.getColumn(), next);
+			}
+			algo = "LikelyToMatch";
+		}
+
 		float delta = Gdx.graphics.getDeltaTime();
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
@@ -60,6 +82,7 @@ public class Match3Game extends ApplicationAdapter {
 		boardGraphic.render(delta, batch);
 
 		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 14, 7);
+		font.draw(batch, algo, 14, 6);
 		batch.end();
 	}
 

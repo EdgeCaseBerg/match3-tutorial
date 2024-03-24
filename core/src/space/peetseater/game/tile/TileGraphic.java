@@ -73,4 +73,8 @@ public class TileGraphic {
             state = newState;
         }
     }
+
+    public Vector2 getMovablePoint() {
+        return this.movablePoint.getPosition().cpy();
+    }
 }
