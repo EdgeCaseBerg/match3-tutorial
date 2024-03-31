@@ -3,15 +3,19 @@ package space.peetseater.game.grid;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import space.peetseater.game.Constants;
 import space.peetseater.game.TestTexture;
 import space.peetseater.game.shared.MovablePoint;
 import space.peetseater.game.tile.TileGraphic;
 import space.peetseater.game.tile.TileType;
+import space.peetseater.game.tile.commands.DeselectTile;
+import space.peetseater.game.tile.commands.SelectTile;
 
-import static space.peetseater.game.Constants.BOARD_UNIT_HEIGHT;
-import static space.peetseater.game.Constants.BOARD_UNIT_WIDTH;
+import java.util.List;
+
+import static space.peetseater.game.Constants.*;
 
 public class BoardGraphic {
     protected MovablePoint movablePoint;
@@ -59,8 +63,54 @@ public class BoardGraphic {
 
     public void replaceTile(int row, int column, TileType tileType) {
         GridSpace<TileGraphic> space = this.gameGrid.getTile(row, column);
-        Vector2 position = space.getValue().getMovablePoint();
+        Vector2 position = space.getValue().getMovablePointPosition();
         space.setValue(new TileGraphic(position, tileType));
     }
 
+    public boolean pointInBounds(float gameX, float gameY) {
+        Vector2 origin = movablePoint.getPosition();
+        boolean inXRange = origin.x + BOARD_UNIT_GUTTER <= gameX && gameX <= origin.x + BOARD_UNIT_WIDTH - BOARD_UNIT_GUTTER;
+        boolean inYRange = origin.y + BOARD_UNIT_GUTTER <= gameY && gameY <= origin.y + BOARD_UNIT_HEIGHT - BOARD_UNIT_GUTTER;
+        return inXRange && inYRange;
+    }
+
+    public int gameXToColumn(float gameX) {
+        float originTileX = movablePoint.getPosition().x + BOARD_UNIT_GUTTER;
+        int tileDistance = (int) (gameX - originTileX);
+        int columnAdjustedForGutters = (int) (gameX - originTileX -  tileDistance * BOARD_UNIT_GUTTER);
+        return MathUtils.clamp(columnAdjustedForGutters, 0, gameGrid.getWidth() - 1);
+    }
+
+    public int gameYToRow(float gameY) {
+        float originTileY = movablePoint.getPosition().y + BOARD_UNIT_GUTTER;
+        int tileDistance = (int) (gameY - originTileY);
+        int columnAdjustedForGutters = (int) (gameY - originTileY -  tileDistance * BOARD_UNIT_GUTTER);
+        return MathUtils.clamp(columnAdjustedForGutters, 0, gameGrid.getHeight() - 1);
+    }
+
+    public void selectCrossSection(int row, int column) {
+        List<GridSpace<TileGraphic>> spacesInRow = gameGrid.getRow(row);
+        List<GridSpace<TileGraphic>> spacesInColumn = gameGrid.getColumn(column);
+        for (GridSpace<TileGraphic> space : spacesInRow) {
+            space.getValue().handleCommand(new SelectTile(space.getValue()));
+        }
+        for (GridSpace<TileGraphic> space : spacesInColumn) {
+            space.getValue().handleCommand(new SelectTile(space.getValue()));
+        }
+    }
+
+    public void deselectCrossSection(int row, int column) {
+        List<GridSpace<TileGraphic>> spacesInRow = gameGrid.getRow(row);
+        List<GridSpace<TileGraphic>> spacesInColumn = gameGrid.getColumn(column);
+        for (GridSpace<TileGraphic> space : spacesInRow) {
+            space.getValue().handleCommand(new DeselectTile(space.getValue()));
+        }
+        for (GridSpace<TileGraphic> space : spacesInColumn) {
+            space.getValue().handleCommand(new DeselectTile(space.getValue()));
+        }
+    }
+
+    public TileGraphic getTile(int row, int column) {
+        return this.gameGrid.getTile(row, column).getValue();
+    }
 }

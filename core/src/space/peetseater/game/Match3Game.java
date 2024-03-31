@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import space.peetseater.game.grid.BoardGraphic;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
+import space.peetseater.game.states.Match3GameState;
 import space.peetseater.game.tile.NextTileAlgorithms;
 import space.peetseater.game.tile.TileType;
 import space.peetseater.game.token.TokenGeneratorAlgorithm;
@@ -27,8 +28,10 @@ public class Match3Game extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	private FitViewport viewport;
 	private TokenGeneratorAlgorithm<TileType> tokenAlgorithm;
-
 	String algo = "WillNotMatch";
+	private DragInputAdapter dragInputAdapter;
+
+	Match3GameState match3GameState;
 
 	@Override
 	public void create () {
@@ -45,6 +48,10 @@ public class Match3Game extends ApplicationAdapter {
 		viewport = new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera);
 		camera.setToOrtho(false);
 		camera.update();
+		this.match3GameState = new Match3GameState(boardGraphic, tokenGrid);
+		this.dragInputAdapter = new DragInputAdapter(viewport);
+		this.dragInputAdapter.addSubscriber(match3GameState);
+		Gdx.input.setInputProcessor(dragInputAdapter);
 	}
 
 	@Override
@@ -77,13 +84,25 @@ public class Match3Game extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		font.setUseIntegerPositions(false);
 		font.getData().setScale(16f / Gdx.graphics.getWidth(), 16f / Gdx.graphics.getHeight());
+
+		update(delta);
+
 		ScreenUtils.clear(Color.BLACK);
 		batch.begin();
 		boardGraphic.render(delta, batch);
 
 		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 14, 7);
 		font.draw(batch, algo, 14, 6);
+		font.draw(batch, dragInputAdapter.dragStart + " " + dragInputAdapter.dragEnd + " " + dragInputAdapter.getIsDragging() + " " + dragInputAdapter.getWasDragged(), 9, 5);
+		if (dragInputAdapter.isDragging) {
+			font.draw(batch, boardGraphic.gameXToColumn(dragInputAdapter.dragEnd.x) + " " + boardGraphic.gameYToRow(dragInputAdapter.dragEnd.y), 9, 4);
+		}
+
 		batch.end();
+	}
+
+	public void update(float delta) {
+		match3GameState.update(delta);
 	}
 
 	@Override
@@ -97,4 +116,5 @@ public class Match3Game extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 	}
+
 }

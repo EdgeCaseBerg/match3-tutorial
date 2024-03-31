@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import space.peetseater.game.TestTexture;
 import space.peetseater.game.shared.Command;
-import space.peetseater.game.states.LinearMovementBehavior;
 import space.peetseater.game.shared.MovablePoint;
+import space.peetseater.game.states.LinearMovementBehavior;
 import space.peetseater.game.tile.states.NotSelected;
 
 import static space.peetseater.game.Constants.TILE_UNIT_HEIGHT;
@@ -74,7 +74,11 @@ public class TileGraphic {
         }
     }
 
-    public Vector2 getMovablePoint() {
+    public Vector2 getMovablePointPosition() {
         return this.movablePoint.getPosition().cpy();
+    }
+
+    public MovablePoint getMovablePoint() {
+        return this.movablePoint;
     }
 }
