@@ -1,6 +1,5 @@
 package space.peetseater.game.states;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import space.peetseater.game.Constants;
 import space.peetseater.game.DragEventSubscriber;
@@ -13,7 +12,6 @@ import space.peetseater.game.tile.TileGraphic;
 import space.peetseater.game.tile.TileType;
 import space.peetseater.game.tile.commands.DeselectTile;
 import space.peetseater.game.tile.commands.IncludeInMatch;
-import space.peetseater.game.tile.commands.SelectTile;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -86,7 +84,6 @@ public class Match3GameState implements DragEventSubscriber {
             return;
         }
 
-        Gdx.app.log("onDrag", "? " + gameX + "," + gameY);
         float offsetByHalfX = gameX - Constants.TILE_UNIT_WIDTH / 2;
         float offsetByHalfY = gameY - Constants.TILE_UNIT_HEIGHT / 2;
         commands.add(new MoveTowards(new Vector2(offsetByHalfX, offsetByHalfY), selected.getMovablePoint()));

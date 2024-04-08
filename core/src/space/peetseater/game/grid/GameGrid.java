@@ -1,7 +1,11 @@
 package space.peetseater.game.grid;
 
+import space.peetseater.game.grid.commands.ShiftToken;
+import space.peetseater.game.grid.commands.ShiftToken.Direction;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GameGrid<T> implements Iterable<GridSpace<T>>{
@@ -22,10 +26,10 @@ public class GameGrid<T> implements Iterable<GridSpace<T>>{
     }
 
     public GridSpace<T> getTile(int row, int column) {
-        if (column < 0 || column > width) {
+        if (column < 0 || column >= width) {
             throw new SpaceOutOfBoundsException("Column index out of bound");
         }
-        if (row > height || row < 0) {
+        if (row >= height || row < 0) {
             throw new SpaceOutOfBoundsException("Row index out of bound");
         }
         return this.spaces.get(row).get(column);
@@ -33,6 +37,33 @@ public class GameGrid<T> implements Iterable<GridSpace<T>>{
 
     public void setTileValue(int row, int column, T value) {
         getTile(row, column).setValue(value);
+    }
+
+    public void swapValuesAt(int aRow, int aColumn, int bRow, int bColumn) {
+        T a = getTile(aRow, aColumn).getValue();
+        T b = getTile(bRow, bColumn).getValue();
+        setTileValue(aRow, aColumn, b);
+        setTileValue(bRow, bColumn, a);
+    }
+
+    public List<ShiftToken> getShiftsToMoveFromStartToEnd(int startRow, int startColumn, int endRow, int endColumn) {
+        boolean isHorizontal = startRow == endRow;
+        boolean isVertical = startColumn == endColumn;
+        Direction moveDirectionH = startColumn < endColumn ? Direction.RIGHT : Direction.LEFT;
+        Direction moveDirectionV = startRow < endRow ? Direction.UP : Direction.DOWN;
+        List<ShiftToken> moves = new LinkedList<>();
+        if (isHorizontal) {
+            for (int c = 0; c < Math.abs(startColumn - endColumn); c++) {
+                int direction = Integer.signum(endColumn - startColumn);
+                moves.add(new ShiftToken(startRow, startColumn + c *  direction, moveDirectionH, this));
+            }
+        } else if (isVertical) {
+            for (int r = 0; r < Math.abs(startRow - endRow); r++) {
+                int direction = Integer.signum(endRow - startRow);
+                moves.add(new ShiftToken(startRow + r * direction, startColumn, moveDirectionV, this));
+            }
+        }
+        return moves;
     }
 
     public List<GridSpace<T>> getRow(int row) {
@@ -47,7 +78,7 @@ public class GameGrid<T> implements Iterable<GridSpace<T>>{
             throw new SpaceOutOfBoundsException("Column index out of bound");
         }
         List<GridSpace<T>> columnSpaces = new ArrayList<>();
-        for (int r = 0; r < width; r++) {
+        for (int r = 0; r < height; r++) {
             columnSpaces.add(this.spaces.get(r).get(column));
         }
         return columnSpaces;
