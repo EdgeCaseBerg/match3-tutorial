@@ -2,11 +2,10 @@ package space.peetseater.game.grid;
 
 import space.peetseater.game.grid.commands.ShiftToken;
 import space.peetseater.game.grid.commands.ShiftToken.Direction;
+import space.peetseater.game.grid.match.AbstractMatcher;
+import space.peetseater.game.shared.Command;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class GameGrid<T> implements Iterable<GridSpace<T>>{
     protected final List<List<GridSpace<T>>> spaces;
@@ -64,6 +63,41 @@ public class GameGrid<T> implements Iterable<GridSpace<T>>{
             }
         }
         return moves;
+    }
+
+    public void applyMoves(List<Command> moves) {
+        for (Command move: moves) {
+            move.execute();
+        }
+    }
+
+    protected boolean testIfMovesValid(
+            List<ShiftToken> moves,
+            AbstractMatcher<T> matcher
+    ) {
+        Stack<ShiftToken> applied = new Stack<>();
+        boolean canApply = false;
+        try {
+            // Apply moves to grid
+            for (ShiftToken move : moves) {
+                move.execute();
+                applied.push(move);
+            }
+            // Check for matches
+            canApply = !matcher.findMatches().isEmpty();
+
+            while (!applied.isEmpty()) {
+                applied.pop().execute();
+            }
+
+            return canApply;
+        } catch (InvalidShiftingException InvalidShiftingException) {
+            // Undo previously applied moves to revert grid to prior state
+            while(!applied.isEmpty()) {
+                applied.pop().execute();
+            }
+            return canApply;
+        }
     }
 
     public List<GridSpace<T>> getRow(int row) {

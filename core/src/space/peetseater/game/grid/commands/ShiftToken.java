@@ -59,12 +59,7 @@ public class ShiftToken implements Command {
         }
 
         try {
-            GridSpace start = gameGrid.getTile(startRow, startColumn);
-            GridSpace end = gameGrid.getTile(endRow, endColumn);
-            Object startValue = start.getValue();
-            Object endValue = end.getValue();
-            start.setValue(endValue);
-            end.setValue(startValue);
+            gameGrid.swapValuesAt(startRow, startColumn, endRow, endColumn);
         } catch (SpaceOutOfBoundsException tileOutOfBoundsException) {
             throw new InvalidShiftingException(this, tileOutOfBoundsException);
         }
