@@ -65,13 +65,13 @@ public class GameGrid<T> implements Iterable<GridSpace<T>>{
         return moves;
     }
 
-    public void applyMoves(List<Command> moves) {
+    public void applyMoves(List<ShiftToken> moves) {
         for (Command move: moves) {
             move.execute();
         }
     }
 
-    protected boolean testIfMovesValid(
+    public boolean testIfMovesValid(
             List<ShiftToken> moves,
             AbstractMatcher<T> matcher
     ) {

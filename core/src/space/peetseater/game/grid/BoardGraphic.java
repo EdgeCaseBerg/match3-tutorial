@@ -7,7 +7,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import space.peetseater.game.Constants;
 import space.peetseater.game.TestTexture;
+import space.peetseater.game.grid.commands.ShiftToken;
 import space.peetseater.game.shared.MovablePoint;
+import space.peetseater.game.shared.commands.MoveTowards;
 import space.peetseater.game.tile.TileGraphic;
 import space.peetseater.game.tile.TileType;
 import space.peetseater.game.tile.commands.DeselectTile;
@@ -20,7 +22,7 @@ import static space.peetseater.game.Constants.*;
 public class BoardGraphic {
     protected MovablePoint movablePoint;
     private final Texture texture;
-    protected final GameGrid<TileGraphic> gameGrid;
+    public final GameGrid<TileGraphic> gameGrid;
     public BoardGraphic(final Vector2 position, GameGrid<TileType> sourceOfTruth) {
         this.movablePoint = new MovablePoint(position);
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
@@ -29,17 +31,30 @@ public class BoardGraphic {
     }
 
     protected void initializeGrid(GameGrid<TileType> sourceOfTruth) {
-        float gutter = Constants.BOARD_UNIT_GUTTER;
         for (GridSpace<TileGraphic> tileGraphicGameGrid : gameGrid) {
             GridSpace<TileType> tokenSpace = sourceOfTruth.getTile(tileGraphicGameGrid.getRow(), tileGraphicGameGrid.getColumn());
 
-            float ty = tileGraphicGameGrid.getRow() * (1 + gutter) + gutter;
-            float tx = tileGraphicGameGrid.getColumn() * (1 + gutter) + gutter;
-            Vector2 offsetPosition = this.movablePoint.getPosition().cpy().add(tx, ty);
+            float ty = screenYFromGridRow(tileGraphicGameGrid.getRow());
+            float tx = screenXFromGridColumn(tileGraphicGameGrid.getColumn());
+            Vector2 offsetPosition = new Vector2(tx, ty);
 
             TileGraphic tileGraphic = new TileGraphic(offsetPosition, tokenSpace.getValue());
             tileGraphicGameGrid.setValue(tileGraphic);
         }
+    }
+
+    public void applyMoves(List<ShiftToken> moves) {
+        gameGrid.applyMoves(moves);
+    }
+
+    public float screenYFromGridRow(int row) {
+        float gutter = Constants.BOARD_UNIT_GUTTER;
+        return this.movablePoint.getPosition().y + (row * (1 + gutter) + gutter);
+    }
+
+    public float screenXFromGridColumn(int column) {
+        float gutter = Constants.BOARD_UNIT_GUTTER;
+        return this.movablePoint.getPosition().x + (column * (1 + gutter) + gutter);
     }
 
     public void render(float delta, SpriteBatch batch) {
@@ -107,6 +122,25 @@ public class BoardGraphic {
         }
         for (GridSpace<TileGraphic> space : spacesInColumn) {
             space.getValue().handleCommand(new DeselectTile(space.getValue()));
+        }
+    }
+
+    public void repositionCrossSection(int row, int column) {
+        List<GridSpace<TileGraphic>> spacesInRow = gameGrid.getRow(row);
+        List<GridSpace<TileGraphic>> spacesInColumn = gameGrid.getColumn(column);
+        for (GridSpace<TileGraphic> space : spacesInRow) {
+            Vector2 destination = new Vector2(
+                screenXFromGridColumn(space.getColumn()),
+                screenYFromGridRow(space.getRow())
+            );
+            space.getValue().handleCommand(new MoveTowards(destination, space.getValue().getMovablePoint()));
+        }
+        for (GridSpace<TileGraphic> space : spacesInColumn) {
+            Vector2 destination = new Vector2(
+                screenXFromGridColumn(space.getColumn()),
+                screenYFromGridRow(space.getRow())
+            );
+            space.getValue().handleCommand(new MoveTowards(destination, space.getValue().getMovablePoint()));
         }
     }
 

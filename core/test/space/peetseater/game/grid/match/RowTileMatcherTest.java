@@ -90,4 +90,14 @@ class RowTileMatcherTest {
         Assertions.assertTrue(bigMatch.isLegal());
         Assertions.assertEquals(5, bigMatch.getSpaces().size());
     }
+
+    @Test
+    void findMatchesWhenProcessingEntireRow() {
+        RowTileMatcher<TileType> matcher = new RowTileMatcher<>(grid, 2);
+        List<Match<TileType>> matches = matcher.findMatches();
+        Assertions.assertEquals(2, matches.size());
+        // TODO: Bug, detects a size 3 match and not a size 5 one
+    }
+
+
 }

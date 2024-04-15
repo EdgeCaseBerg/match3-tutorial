@@ -10,6 +10,8 @@ import space.peetseater.game.shared.MovablePoint;
 import space.peetseater.game.states.LinearMovementBehavior;
 import space.peetseater.game.tile.states.NotSelected;
 
+import java.util.Objects;
+
 import static space.peetseater.game.Constants.TILE_UNIT_HEIGHT;
 import static space.peetseater.game.Constants.TILE_UNIT_WIDTH;
 
@@ -80,5 +82,22 @@ public class TileGraphic {
 
     public MovablePoint getMovablePoint() {
         return this.movablePoint;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TileGraphic that = (TileGraphic) o;
+        return tileType == that.tileType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tileType, texture, state, positionState, movablePoint);
+    }
+
+    public TileType getTileType() {
+        return this.tileType;
     }
 }

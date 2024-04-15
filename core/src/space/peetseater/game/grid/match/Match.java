@@ -3,6 +3,7 @@ package space.peetseater.game.grid.match;
 import space.peetseater.game.grid.GridSpace;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class Match<T> {
     public static int DEFAULT_MIN_MATCH_LENGTH = 3;
@@ -47,5 +48,24 @@ public class Match<T> {
 
     public int getMinMatchLength() {
         return this.minMatchLength;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSpaces());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Match) {
+            Match<?> other = (Match<?>) obj;
+            boolean eq = true;
+            for (GridSpace<T> mySpace : this.spaces) {
+                boolean matchInOther = other.spaces.contains(mySpace);
+                eq = eq && matchInOther;
+            }
+            return eq;
+        }
+        return super.equals(obj);
     }
 }
