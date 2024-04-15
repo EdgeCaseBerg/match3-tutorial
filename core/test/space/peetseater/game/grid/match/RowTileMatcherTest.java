@@ -1,13 +1,17 @@
 package space.peetseater.game.grid.match;
 
+import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.tile.TileType;
 import space.peetseater.game.token.TokenGeneratorAlgorithm;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static space.peetseater.game.tile.TileType.*;
@@ -96,7 +100,35 @@ class RowTileMatcherTest {
         RowTileMatcher<TileType> matcher = new RowTileMatcher<>(grid, 2);
         List<Match<TileType>> matches = matcher.findMatches();
         Assertions.assertEquals(2, matches.size());
-        // TODO: Bug, detects a size 3 match and not a size 5 one
+
+        final HashMap<GridSpace<TileType>, Boolean> expectedSeen = new HashMap<>();
+        expectedSeen.put(grid.getTile(1, 0), false);
+        expectedSeen.put(grid.getTile(2, 0), false);
+        expectedSeen.put(grid.getTile(3, 0), false);
+        expectedSeen.put(grid.getTile(1, 1), false);
+        expectedSeen.put(grid.getTile(2, 1), false);
+        expectedSeen.put(grid.getTile(3, 1), false);
+        expectedSeen.put(grid.getTile(1, 2), false);
+        expectedSeen.put(grid.getTile(1, 3), false);
+
+        for (Match<TileType> match : matches) {
+            for (GridSpace<TileType> gridSpace : match.getSpaces()) {
+                expectedSeen.put(gridSpace, true);
+            }
+        }
+
+        List<Executable> tests = new ArrayList<>();
+        for (final GridSpace<TileType> key : expectedSeen.keySet()) {
+            tests.add(
+                new Executable() {
+                    @Override
+                    public void execute() throws Throwable {
+                        Assertions.assertTrue(expectedSeen.get(key), key.getRow() + "," + key.getColumn() + "  not seen in match");
+                    }
+                }
+            );
+        }
+        Assertions.assertAll(tests);
     }
 
 
