@@ -144,6 +144,19 @@ public class BoardGraphic {
         }
     }
 
+    public void repositionColumn(int column) {
+        List<GridSpace<TileGraphic>> spacesInColumn = gameGrid.getColumn(column);
+        for (GridSpace<TileGraphic> space : spacesInColumn) {
+            Vector2 destination = new Vector2(
+                    screenXFromGridColumn(space.getColumn()),
+                    screenYFromGridRow(space.getRow())
+            );
+            if (space.getValue() != null) {
+                space.getValue().handleCommand(new MoveTowards(destination, space.getValue().getMovablePoint()));
+            }
+        }
+    }
+
     public TileGraphic getTile(int row, int column) {
         return this.gameGrid.getTile(row, column).getValue();
     }

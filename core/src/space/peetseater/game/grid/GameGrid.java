@@ -57,6 +57,21 @@ public class GameGrid<T> implements Iterable<GridSpace<T>>{
         return commands;
     }
 
+    public List<ShiftToken> getGravityShiftsForColumn(int columnNumber) {
+        List<ShiftToken> moves = new LinkedList<>();
+        List<GridSpace<T>> column = getColumn(columnNumber);
+        int i = 0;
+        for (int r = column.size() - 1; r > -1; r--) {
+            GridSpace<T> space = column.get(r);
+            if (space.getValue() != null) {
+                i++;
+            } else {
+                moves.addAll(getShiftsToMoveFromStartToEnd(r, columnNumber, r + i, columnNumber));
+            }
+        }
+        return moves;
+    }
+
     public List<ShiftToken> getShiftsToMoveFromStartToEnd(int startRow, int startColumn, int endRow, int endColumn) {
         boolean isHorizontal = startRow == endRow;
         boolean isVertical = startColumn == endColumn;

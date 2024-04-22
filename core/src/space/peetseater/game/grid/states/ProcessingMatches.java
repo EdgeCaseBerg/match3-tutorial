@@ -3,7 +3,9 @@ package space.peetseater.game.grid.states;
 import space.peetseater.game.grid.BoardGraphic;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
+import space.peetseater.game.grid.commands.ApplyGravityToColumn;
 import space.peetseater.game.grid.commands.ClearGridSpace;
+import space.peetseater.game.grid.commands.RepositionColumn;
 import space.peetseater.game.grid.match.FullGridTileMatcher;
 import space.peetseater.game.grid.match.Match;
 import space.peetseater.game.grid.match.MatchEventPublisher;
@@ -14,10 +16,7 @@ import space.peetseater.game.states.Match3GameState;
 import space.peetseater.game.tile.TileGraphic;
 import space.peetseater.game.tile.TileType;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ProcessingMatches implements BoardState, MatchEventPublisher<TileType> {
 
@@ -36,7 +35,7 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
         this.subscribers = new HashSet<>(1);
     }
 
-    protected List<Command> processMatches() {
+    protected void processMatches() {
         FullGridTileMatcher<TileType> tileMatcher = new FullGridTileMatcher<>(gameGrid);
         List<Match<TileType>> newMatches = tileMatcher.findMatches();
         this.isDoneProcessing = isDoneProcessing || newMatches.isEmpty();
@@ -47,15 +46,29 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
             }
         }
 
+        Set<Integer> columnsToApplyGravityTo = new HashSet<>();
+        for (Match<TileType> match : newMatches) {
+            for (GridSpace space : match.getSpaces()) {
+                columnsToApplyGravityTo.add(space.getColumn());
+            }
+        }
+
         List<ClearGridSpace> clears = gameGrid.getClearCommandsForMatches(newMatches);
         this.commands.addAll(clears);
+
+        for (Integer column : columnsToApplyGravityTo) {
+            this.commands.add(new ApplyGravityToColumn(column, gameGrid));
+        }
 
         FullGridTileMatcher<TileGraphic> tileMatcher2 = new FullGridTileMatcher<>(boardGraphic.gameGrid);
         List<Match<TileGraphic>> graphicalMatches = tileMatcher2.findMatches();
 
-
         List<ClearGridSpace> graphicClears = boardGraphic.gameGrid.getClearCommandsForMatches(graphicalMatches);
         this.commands.addAll(graphicClears);
+        for (Integer column : columnsToApplyGravityTo) {
+            this.commands.add(new ApplyGravityToColumn(column, boardGraphic.gameGrid));
+            this.commands.add(new RepositionColumn(column, boardGraphic));
+        }
 
         Iterator<GridSpace<TileGraphic>> iter = boardGraphic.gameGrid.iterator();
         while(iter.hasNext()) {
@@ -67,8 +80,6 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
                 isDoneProcessing = isDoneProcessing && movablePoint.getPosition().equals(movablePoint.getDestination());
             }
         }
-
-        return commands;
     }
 
     @Override
@@ -83,7 +94,7 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
 
     @Override
     public BoardState update(float delta) {
-        this.commands.addAll(processMatches());
+        processMatches();
         while (!this.commands.isEmpty()) {
             Command command = this.commands.remove();
             command.execute();

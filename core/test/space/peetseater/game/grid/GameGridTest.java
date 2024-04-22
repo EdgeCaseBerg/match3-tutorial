@@ -152,5 +152,66 @@ class GameGridTest {
         Assertions.assertTrue(grid.testIfMovesValid(moves, new RowTileMatcher<TileType>(grid, 0)));
     }
 
+    @Test
+    void testGravityShiftsNullsOnTop() {
+        grid.setTileValue(grid.getHeight() - 1, 0, null);
+        grid.setTileValue(grid.getHeight() - 2, 0, null);
+        grid.setTileValue(grid.getHeight() - 3, 0, null);
+        List<ShiftToken> moves = grid.getGravityShiftsForColumn(0);
+        // All filled in tiles are already on the bottom, no shifts needed
+        Assertions.assertTrue(moves.isEmpty());
+    }
+
+    @Test
+    void testGravityShiftsNullsOnBottom() {
+        grid.setTileValue(0, 0, null);
+        grid.setTileValue(1, 0, null);
+        grid.setTileValue(2, 0, null);
+        List<ShiftToken> moves = grid.getGravityShiftsForColumn(0);
+        Assertions.assertEquals(6, moves.size());
+        Assertions.assertEquals(new ShiftToken(2, 0, ShiftToken.Direction.UP, grid), moves.get(0));
+        Assertions.assertEquals(new ShiftToken(3, 0, ShiftToken.Direction.UP, grid), moves.get(1));
+        Assertions.assertEquals(new ShiftToken(1, 0, ShiftToken.Direction.UP, grid), moves.get(2));
+        Assertions.assertEquals(new ShiftToken(2, 0, ShiftToken.Direction.UP, grid), moves.get(3));
+        Assertions.assertEquals(new ShiftToken(0, 0, ShiftToken.Direction.UP, grid), moves.get(4));
+        Assertions.assertEquals(new ShiftToken(1, 0, ShiftToken.Direction.UP, grid), moves.get(5));
+    }
+
+    @Test
+    void testGravityShiftsNullsInMiddle() {
+        grid.setTileValue(1, 0, null);
+        grid.setTileValue(2, 0, null);
+        grid.setTileValue(3, 0, null);
+        List<ShiftToken> moves = grid.getGravityShiftsForColumn(0);
+        Assertions.assertEquals(3, moves.size());
+        Assertions.assertEquals(new ShiftToken(3, 0, ShiftToken.Direction.UP, grid), moves.get(0));
+        Assertions.assertEquals(new ShiftToken(2, 0, ShiftToken.Direction.UP, grid), moves.get(1));
+        Assertions.assertEquals(new ShiftToken(1, 0, ShiftToken.Direction.UP, grid), moves.get(2));
+    }
+
+    @Test
+    void testGravityShiftsSpacedOutHoles() {
+        grid.setTileValue(0, 0, null);
+        grid.setTileValue(2, 0, null);
+        grid.setTileValue(4, 0, null);
+        List<ShiftToken> moves = grid.getGravityShiftsForColumn(0);
+        Assertions.assertEquals(3, moves.size());
+        Assertions.assertEquals(new ShiftToken(2, 0, ShiftToken.Direction.UP, grid), moves.get(0));
+        Assertions.assertEquals(new ShiftToken(0, 0, ShiftToken.Direction.UP, grid), moves.get(1));
+        Assertions.assertEquals(new ShiftToken(1, 0, ShiftToken.Direction.UP, grid), moves.get(2));
+    }
+
+    @Test
+    void testGravityShiftsSpacedOutHoles2() {
+        grid.setTileValue(1, 0, null);
+        grid.setTileValue(3, 0, null);
+        List<ShiftToken> moves = grid.getGravityShiftsForColumn(0);
+        Assertions.assertEquals(3, moves.size());
+        Assertions.assertEquals(new ShiftToken(3, 0, ShiftToken.Direction.UP, grid), moves.get(0));
+        Assertions.assertEquals(new ShiftToken(1, 0, ShiftToken.Direction.UP, grid), moves.get(1));
+        Assertions.assertEquals(new ShiftToken(2, 0, ShiftToken.Direction.UP, grid), moves.get(2));
+    }
+
+
 
 }
