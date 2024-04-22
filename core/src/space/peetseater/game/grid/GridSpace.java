@@ -27,7 +27,8 @@ public class GridSpace<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GridSpace<T> filled = (GridSpace<T>) o;
-        return Objects.equals(value, filled.value);
+        if (value == null || filled.value == null) return false;
+        return value.equals(filled.value);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package space.peetseater.game.grid;
 
+import space.peetseater.game.grid.commands.ClearGridSpace;
 import space.peetseater.game.grid.commands.ShiftToken;
 import space.peetseater.game.grid.commands.ShiftToken.Direction;
 import space.peetseater.game.grid.match.AbstractMatcher;
+import space.peetseater.game.grid.match.Match;
 import space.peetseater.game.shared.Command;
 
 import java.util.*;
@@ -43,6 +45,16 @@ public class GameGrid<T> implements Iterable<GridSpace<T>>{
         T b = getTile(bRow, bColumn).getValue();
         setTileValue(aRow, aColumn, b);
         setTileValue(bRow, bColumn, a);
+    }
+
+    public List<ClearGridSpace> getClearCommandsForMatches(List<Match<T>> matches) {
+        List<ClearGridSpace> commands = new LinkedList<>();
+        for (Match<T> match : matches) {
+            for (GridSpace<T> space : match.getSpaces()) {
+                commands.add(new ClearGridSpace(space));
+            }
+        }
+        return commands;
     }
 
     public List<ShiftToken> getShiftsToMoveFromStartToEnd(int startRow, int startColumn, int endRow, int endColumn) {
