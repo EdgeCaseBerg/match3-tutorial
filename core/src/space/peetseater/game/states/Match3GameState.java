@@ -19,14 +19,12 @@ import java.util.Queue;
 public class Match3GameState implements DragEventSubscriber, MatchEventPublisher<TileType>, MatchSubscriber<TileType> {
 
     private final BoardGraphic boardGraphic;
-    private final GameGrid<TileType> gameGrid;
     private BoardState boardState;
     Queue<Command> commands;
-    private HashSet<MatchSubscriber<TileType>> subscribers;
+    private final HashSet<MatchSubscriber<TileType>> subscribers;
 
     public Match3GameState(BoardGraphic boardGraphic, GameGrid<TileType> gameGrid) {
         this.boardGraphic = boardGraphic;
-        this.gameGrid = gameGrid;
         this.commands = new LinkedList<>();
         this.boardState = new BoardAcceptingMoves(boardGraphic, gameGrid);
         this.boardState.onEnterState(this);

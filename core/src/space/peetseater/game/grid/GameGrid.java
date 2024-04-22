@@ -140,6 +140,6 @@ public class GameGrid<T> implements Iterable<GridSpace<T>>{
 
     @Override
     public Iterator<GridSpace<T>> iterator() {
-        return new GridIterator<T>(this);
+        return new GridIterator<>(this);
     }
 }

@@ -144,7 +144,7 @@ public class BoardAcceptingMoves implements BoardState {
         int column = this.boardGraphic.gameXToColumn(gameX);
 
         List<ShiftToken> moves = this.gameGrid.getShiftsToMoveFromStartToEnd(crossSection.getRow(), crossSection.getColumn(), row, column);
-        this.hasMatches = gameGrid.testIfMovesValid(moves, new CrossSectionTileMatcher<TileType>(crossSection.getRow(), crossSection.getColumn(), gameGrid));
+        this.hasMatches = gameGrid.testIfMovesValid(moves, new CrossSectionTileMatcher<>(crossSection.getRow(), crossSection.getColumn(), gameGrid));
         if (this.hasMatches) {
             this.commands.addAll(moves);
             for (ShiftToken shiftToken : moves) {
