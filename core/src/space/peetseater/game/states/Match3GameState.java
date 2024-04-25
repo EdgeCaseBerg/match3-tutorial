@@ -10,6 +10,7 @@ import space.peetseater.game.grid.states.BoardAcceptingMoves;
 import space.peetseater.game.grid.states.BoardState;
 import space.peetseater.game.shared.Command;
 import space.peetseater.game.tile.TileType;
+import space.peetseater.game.token.TokenGeneratorAlgorithm;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -17,18 +18,22 @@ import java.util.List;
 import java.util.Queue;
 
 public class Match3GameState implements DragEventSubscriber, MatchEventPublisher<TileType>, MatchSubscriber<TileType> {
-
     private final BoardGraphic boardGraphic;
+
+    private TokenGeneratorAlgorithm<TileType> tokenAlgorithm;
+    private final GameGrid<TileType> gameGrid;
     private BoardState boardState;
     Queue<Command> commands;
     private final HashSet<MatchSubscriber<TileType>> subscribers;
 
-    public Match3GameState(BoardGraphic boardGraphic, GameGrid<TileType> gameGrid) {
+    public Match3GameState(BoardGraphic boardGraphic, GameGrid<TileType> gameGrid, TokenGeneratorAlgorithm<TileType> tokenAlgorithm) {
         this.boardGraphic = boardGraphic;
         this.commands = new LinkedList<>();
-        this.boardState = new BoardAcceptingMoves(boardGraphic, gameGrid);
+        this.gameGrid = gameGrid;
+        this.boardState = new BoardAcceptingMoves(this);
         this.boardState.onEnterState(this);
         this.subscribers = new HashSet<>(1);
+        this.tokenAlgorithm = tokenAlgorithm;
     }
 
     public void update(float delta) {
@@ -94,5 +99,21 @@ public class Match3GameState implements DragEventSubscriber, MatchEventPublisher
         for (MatchSubscriber<TileType> matchSubscriber : subscribers) {
             matchSubscriber.onMatches(matches);
         }
+    }
+
+    public BoardGraphic getBoardGraphic() {
+        return boardGraphic;
+    }
+
+    public GameGrid<TileType> getGameGrid() {
+        return gameGrid;
+    }
+
+    public TokenGeneratorAlgorithm<TileType> getTokenAlgorithm() {
+        return tokenAlgorithm;
+    }
+
+    public void setTokenAlgorithm(TokenGeneratorAlgorithm<TileType> tokenAlgorithm) {
+        this.tokenAlgorithm = tokenAlgorithm;
     }
 }

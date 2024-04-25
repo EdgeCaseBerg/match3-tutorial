@@ -28,6 +28,7 @@ public class BoardAcceptingMoves implements BoardState {
     private final BoardGraphic boardGraphic;
     private final GameGrid<TileType> gameGrid;
     private final LinkedList<ShiftToken> dragMoves;
+    private final Match3GameState match3GameState;
     private GridSpace<TileGraphic> lastMove;
     Queue<Command> commands;
 
@@ -36,9 +37,10 @@ public class BoardAcceptingMoves implements BoardState {
     SelectCrossSection crossSection;
     private boolean hasMatches;
 
-    public BoardAcceptingMoves(BoardGraphic boardGraphic, GameGrid<TileType> gameGrid) {
-        this.boardGraphic = boardGraphic;
-        this.gameGrid = gameGrid;
+    public BoardAcceptingMoves(Match3GameState match3GameState) {
+        this.match3GameState = match3GameState;
+        this.boardGraphic = match3GameState.getBoardGraphic();
+        this.gameGrid = match3GameState.getGameGrid();
         this.commands = new LinkedList<>();
         this.selected = null;
         this.crossSection = null;
@@ -207,7 +209,7 @@ public class BoardAcceptingMoves implements BoardState {
         }
 
         if(hasMatches) {
-            return new ProcessingMatches(boardGraphic, gameGrid);
+            return new ProcessingMatches(match3GameState);
         }
         return this;
     }

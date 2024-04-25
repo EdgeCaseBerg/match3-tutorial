@@ -5,6 +5,7 @@ import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.grid.commands.ApplyGravityToColumn;
 import space.peetseater.game.grid.commands.ClearGridSpace;
+import space.peetseater.game.grid.commands.DropTileToSpace;
 import space.peetseater.game.grid.commands.RepositionColumn;
 import space.peetseater.game.grid.match.FullGridTileMatcher;
 import space.peetseater.game.grid.match.Match;
@@ -24,12 +25,14 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
     private final GameGrid<TileType> gameGrid;
     private final LinkedList<Command> commands;
     private final HashSet<MatchSubscriber<TileType>> subscribers;
+    private final Match3GameState match3GameState;
 
     private boolean isDoneProcessing;
 
-    public ProcessingMatches(BoardGraphic boardGraphic, GameGrid<TileType> gameGrid) {
-        this.boardGraphic = boardGraphic;
-        this.gameGrid = gameGrid;
+    public ProcessingMatches(Match3GameState match3GameState) {
+        this.match3GameState = match3GameState;
+        this.boardGraphic = match3GameState.getBoardGraphic();
+        this.gameGrid = match3GameState.getGameGrid();
         this.commands = new LinkedList<>();
         this.isDoneProcessing = false;
         this.subscribers = new HashSet<>(1);
@@ -75,9 +78,10 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
             GridSpace<TileGraphic> tileGraphicGridSpace = iter.next();
             if (tileGraphicGridSpace.getValue() == null) {
                 isDoneProcessing = false;
+                this.commands.add(new DropTileToSpace(match3GameState, tileGraphicGridSpace.getRow(), tileGraphicGridSpace.getColumn()));
             } else {
                 MovablePoint movablePoint = tileGraphicGridSpace.getValue().getMovablePoint();
-                isDoneProcessing = isDoneProcessing && movablePoint.getPosition().equals(movablePoint.getDestination());
+                isDoneProcessing = newMatches.isEmpty() && (movablePoint.getPosition().equals(movablePoint.getDestination()) || movablePoint.getDestination() == null);
             }
         }
     }
@@ -100,7 +104,7 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
             command.execute();
         }
         if (isDoneProcessing) {
-            return new BoardAcceptingMoves(boardGraphic, gameGrid);
+            return new BoardAcceptingMoves(match3GameState);
         }
         return this;
     }

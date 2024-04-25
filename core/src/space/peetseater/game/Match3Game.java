@@ -13,12 +13,16 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import space.peetseater.game.grid.BoardGraphic;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
+import space.peetseater.game.grid.match.Match;
+import space.peetseater.game.grid.match.MatchSubscriber;
 import space.peetseater.game.states.Match3GameState;
 import space.peetseater.game.tile.NextTileAlgorithms;
 import space.peetseater.game.tile.TileType;
 import space.peetseater.game.token.TokenGeneratorAlgorithm;
 
-public class Match3Game extends ApplicationAdapter {
+import java.util.List;
+
+public class Match3Game extends ApplicationAdapter implements MatchSubscriber<TileType> {
 	SpriteBatch batch;
 	private BoardGraphic boardGraphic;
 	GameGrid<TileType> tokenGrid;
@@ -48,7 +52,8 @@ public class Match3Game extends ApplicationAdapter {
 		viewport = new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera);
 		camera.setToOrtho(false);
 		camera.update();
-		this.match3GameState = new Match3GameState(boardGraphic, tokenGrid);
+		this.match3GameState = new Match3GameState(boardGraphic, tokenGrid, tokenAlgorithm);
+		this.match3GameState.addSubscriber(this);
 		this.dragInputAdapter = new DragInputAdapter(viewport);
 		this.dragInputAdapter.addSubscriber(match3GameState);
 		Gdx.input.setInputProcessor(dragInputAdapter);
@@ -117,4 +122,9 @@ public class Match3Game extends ApplicationAdapter {
 		batch.dispose();
 	}
 
+	@Override
+	public void onMatches(List<Match<TileType>> matches) {
+		// TODO: show this score to the user and whatnot
+		Gdx.app.log("On Match from Game", matches.toString());
+	}
 }

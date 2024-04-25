@@ -78,8 +78,18 @@ public class BoardGraphic {
 
     public void replaceTile(int row, int column, TileType tileType) {
         GridSpace<TileGraphic> space = this.gameGrid.getTile(row, column);
-        Vector2 position = space.getValue().getMovablePointPosition();
+        Vector2 position;
+        float aboveBoard = BOARD_UNIT_HEIGHT + 2f;
+        float ty = screenYFromGridRow(space.getRow());
+        float tx = screenXFromGridColumn(space.getColumn());
+
+        if (space.isFilled()) {
+             position = space.getValue().getMovablePointPosition();
+        } else {
+            position = new Vector2(tx, aboveBoard);
+        }
         space.setValue(new TileGraphic(position, tileType));
+        space.getValue().handleCommand(new MoveTowards(new Vector2(tx, ty)));
     }
 
     public boolean pointInBounds(float gameX, float gameY) {
