@@ -18,9 +18,7 @@ public class ApplyGravityToColumn implements Command {
     @Override
     public void execute() {
         List<ShiftToken> moves = gameGrid.getGravityShiftsForColumn(column);
-        Gdx.app.log("Apply Gravity", "Gets moves " + moves.size());
         for (ShiftToken move : moves) {
-            Gdx.app.log("Apply Gravity", move.toString());
             move.execute();
         }
     }

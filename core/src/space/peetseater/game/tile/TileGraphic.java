@@ -16,7 +16,6 @@ import static space.peetseater.game.Constants.TILE_UNIT_HEIGHT;
 import static space.peetseater.game.Constants.TILE_UNIT_WIDTH;
 
 public class TileGraphic {
-    public static int TILESIZE = 70;
     private final TileType tileType;
     Texture texture;
     TileGraphicState state;
