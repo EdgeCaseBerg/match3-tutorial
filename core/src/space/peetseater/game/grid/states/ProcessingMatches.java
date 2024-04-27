@@ -1,5 +1,6 @@
 package space.peetseater.game.grid.states;
 
+import com.badlogic.gdx.math.Vector2;
 import space.peetseater.game.grid.BoardGraphic;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
@@ -39,9 +40,41 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
     }
 
     protected void processMatches() {
+        // Prevent processing further matches until the board settles
+        boolean tilesMoving = false;
+        Iterator<GridSpace<TileGraphic>> iter2 = boardGraphic.gameGrid.iterator();
+        while(iter2.hasNext()) {
+            GridSpace<TileGraphic> tileGraphicGridSpace = iter2.next();
+            if (tileGraphicGridSpace.isFilled()) {
+                Vector2 position = tileGraphicGridSpace.getValue().getMovablePoint().getPosition();
+                Vector2 destination = tileGraphicGridSpace.getValue().getMovablePoint().getDestination();
+                tilesMoving = !(position.equals(destination) || destination == null);
+            }
+            if (tilesMoving) {
+                break;
+            }
+        }
+        if (tilesMoving) {
+            return;
+        }
+
+        // Matches
         FullGridTileMatcher<TileType> tileMatcher = new FullGridTileMatcher<>(gameGrid);
         List<Match<TileType>> newMatches = tileMatcher.findMatches();
         this.isDoneProcessing = isDoneProcessing || newMatches.isEmpty();
+
+        // Check for empty spaces that need to be filled, this will basically be ran on the next frame after the above commands in the queue have been processed.
+        Iterator<GridSpace<TileGraphic>> iter = boardGraphic.gameGrid.iterator();
+        while(iter.hasNext()) {
+            GridSpace<TileGraphic> tileGraphicGridSpace = iter.next();
+            if (tileGraphicGridSpace.getValue() == null) {
+                isDoneProcessing = false;
+                this.commands.add(new DropTileToSpace(match3GameState, tileGraphicGridSpace.getRow(), tileGraphicGridSpace.getColumn()));
+            } else {
+                MovablePoint movablePoint = tileGraphicGridSpace.getValue().getMovablePoint();
+                isDoneProcessing = isDoneProcessing && newMatches.isEmpty() && (movablePoint.getPosition().equals(movablePoint.getDestination()) || movablePoint.getDestination() == null);
+            }
+        }
 
         if (!newMatches.isEmpty()) {
             for (MatchSubscriber<TileType> matchSubscriber : subscribers) {
@@ -72,18 +105,6 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
             this.commands.add(new ApplyGravityToColumn(column, boardGraphic.gameGrid));
             this.commands.add(new RepositionColumn(column, boardGraphic));
         }
-
-        Iterator<GridSpace<TileGraphic>> iter = boardGraphic.gameGrid.iterator();
-        while(iter.hasNext()) {
-            GridSpace<TileGraphic> tileGraphicGridSpace = iter.next();
-            if (tileGraphicGridSpace.getValue() == null) {
-                isDoneProcessing = false;
-                this.commands.add(new DropTileToSpace(match3GameState, tileGraphicGridSpace.getRow(), tileGraphicGridSpace.getColumn()));
-            } else {
-                MovablePoint movablePoint = tileGraphicGridSpace.getValue().getMovablePoint();
-                isDoneProcessing = newMatches.isEmpty() && (movablePoint.getPosition().equals(movablePoint.getDestination()) || movablePoint.getDestination() == null);
-            }
-        }
     }
 
     @Override
@@ -98,7 +119,9 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
 
     @Override
     public BoardState update(float delta) {
-        processMatches();
+        if (commands.isEmpty()) {
+            processMatches();
+        }
         while (!this.commands.isEmpty()) {
             Command command = this.commands.remove();
             command.execute();
