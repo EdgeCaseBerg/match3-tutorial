@@ -73,6 +73,7 @@ public class Match3Game extends ApplicationAdapter implements MatchSubscriber<Ti
 				space.setValue(next);
 				boardGraphic.replaceTile(space.getRow(), space.getColumn(), next);
 			}
+			match3GameState.setTokenAlgorithm(tokenAlgorithm);
 		}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
 			tokenAlgorithm = new NextTileAlgorithms.LikelyToMatch(tokenGrid);
@@ -82,6 +83,7 @@ public class Match3Game extends ApplicationAdapter implements MatchSubscriber<Ti
 				boardGraphic.replaceTile(space.getRow(), space.getColumn(), next);
 			}
 			algo = "LikelyToMatch";
+			match3GameState.setTokenAlgorithm(tokenAlgorithm);
 		}
 
 		float delta = Gdx.graphics.getDeltaTime();
