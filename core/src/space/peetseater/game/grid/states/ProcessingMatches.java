@@ -41,6 +41,10 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
 
     protected void processMatches() {
         // Prevent processing further matches until the board settles
+        // Note we could probably optimize this by observing the movables + tilegraphics
+        // and then setting the flag based on how many tilegraphics have been told to move
+        // and decrement a counter when they finish and when it's 0 then the board is
+        // settled.
         boolean tilesMoving = false;
         Iterator<GridSpace<TileGraphic>> iter2 = boardGraphic.gameGrid.iterator();
         while(iter2.hasNext()) {
