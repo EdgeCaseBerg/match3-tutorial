@@ -28,4 +28,8 @@ public class MovablePoint implements Movable {
     public void setDestination(Vector2 destination) {
         this.destination = destination;
     }
+
+    public boolean isAtDestination() {
+        return destination == null || position.equals(destination);
+    }
 }

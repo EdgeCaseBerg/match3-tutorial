@@ -34,26 +34,28 @@ public class Match3Game extends ApplicationAdapter implements MatchSubscriber<Ti
 	private TokenGeneratorAlgorithm<TileType> tokenAlgorithm;
 	String algo = "WillNotMatch";
 	private DragInputAdapter dragInputAdapter;
-
 	Match3GameState match3GameState;
+	ScoreGraphic scoreGraphic;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		Vector2 boardPosition = new Vector2(.1f,.1f);
+		Vector2 scorePosition = boardPosition.cpy().add(Constants.BOARD_UNIT_WIDTH + 1f, Constants.BOARD_UNIT_HEIGHT - 3f);
 		this.tokenGrid = new GameGrid<>(Constants.TOKENS_PER_ROW,Constants.TOKENS_PER_COLUMN);
 		tokenAlgorithm = new NextTileAlgorithms.WillNotMatch(tokenGrid);
 		for (GridSpace<TileType> gridSpace : tokenGrid) {
 			gridSpace.setValue(tokenAlgorithm.next(gridSpace.getRow(), gridSpace.getColumn()));
 		}
 		boardGraphic = new BoardGraphic(boardPosition, tokenGrid);
+		scoreGraphic = new ScoreGraphic(scorePosition, boardGraphic);
 		font = new BitmapFont();
 		camera = new OrthographicCamera();
 		viewport = new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera);
 		camera.setToOrtho(false);
 		camera.update();
 		this.match3GameState = new Match3GameState(boardGraphic, tokenGrid, tokenAlgorithm);
-		this.match3GameState.addSubscriber(this);
+		this.match3GameState.addSubscriber(scoreGraphic);
 		this.dragInputAdapter = new DragInputAdapter(viewport);
 		this.dragInputAdapter.addSubscriber(match3GameState);
 		Gdx.input.setInputProcessor(dragInputAdapter);
@@ -97,6 +99,7 @@ public class Match3Game extends ApplicationAdapter implements MatchSubscriber<Ti
 		ScreenUtils.clear(Color.BLACK);
 		batch.begin();
 		boardGraphic.render(delta, batch);
+		scoreGraphic.render(delta, batch, font);
 
 		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 14, 7);
 		font.draw(batch, algo, 14, 6);
@@ -110,6 +113,7 @@ public class Match3Game extends ApplicationAdapter implements MatchSubscriber<Ti
 
 	public void update(float delta) {
 		match3GameState.update(delta);
+		scoreGraphic.update(delta);
 	}
 
 	@Override

@@ -82,6 +82,7 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
 
         if (!newMatches.isEmpty()) {
             for (MatchSubscriber<TileType> matchSubscriber : subscribers) {
+                // TODO: refactor to use a match event class or something so we can stop passing boardgraphic to score graphic
                 matchSubscriber.onMatches(newMatches);
             }
         }
