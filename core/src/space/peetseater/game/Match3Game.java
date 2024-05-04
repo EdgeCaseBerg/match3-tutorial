@@ -22,7 +22,7 @@ import space.peetseater.game.token.TokenGeneratorAlgorithm;
 
 import java.util.List;
 
-public class Match3Game extends ApplicationAdapter implements MatchSubscriber<TileType> {
+public class Match3Game extends ApplicationAdapter {
 	SpriteBatch batch;
 	private BoardGraphic boardGraphic;
 	GameGrid<TileType> tokenGrid;
@@ -70,20 +70,10 @@ public class Match3Game extends ApplicationAdapter implements MatchSubscriber<Ti
 		if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
 			tokenAlgorithm = new NextTileAlgorithms.WillNotMatch(tokenGrid);
 			algo = "WillNotMatch";
-			for (GridSpace<TileType> space : tokenGrid) {
-				TileType next = tokenAlgorithm.next(space.getRow(), space.getColumn());
-				space.setValue(next);
-				boardGraphic.replaceTile(space.getRow(), space.getColumn(), next);
-			}
 			match3GameState.setTokenAlgorithm(tokenAlgorithm);
 		}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
 			tokenAlgorithm = new NextTileAlgorithms.LikelyToMatch(tokenGrid);
-			for (GridSpace<TileType> space : tokenGrid) {
-				TileType next = tokenAlgorithm.next(space.getRow(), space.getColumn());
-				space.setValue(next);
-				boardGraphic.replaceTile(space.getRow(), space.getColumn(), next);
-			}
 			algo = "LikelyToMatch";
 			match3GameState.setTokenAlgorithm(tokenAlgorithm);
 		}
@@ -126,11 +116,5 @@ public class Match3Game extends ApplicationAdapter implements MatchSubscriber<Ti
 	@Override
 	public void dispose () {
 		batch.dispose();
-	}
-
-	@Override
-	public void onMatches(List<Match<TileType>> matches) {
-		// TODO: show this score to the user and whatnot
-		Gdx.app.log("On Match from Game", matches.toString());
 	}
 }
