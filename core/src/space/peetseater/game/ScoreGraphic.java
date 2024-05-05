@@ -10,10 +10,8 @@ import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.grid.match.Match;
 import space.peetseater.game.grid.match.MatchSubscriber;
 import space.peetseater.game.shared.MovablePoint;
-import space.peetseater.game.shared.commands.MoveTowards;
 import space.peetseater.game.tile.TileGraphic;
 import space.peetseater.game.tile.TileType;
-import sun.security.rsa.RSAPadding;
 
 import java.util.LinkedList;
 import java.util.List;
