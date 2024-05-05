@@ -2,7 +2,9 @@ package space.peetseater.game.grid.match;
 
 import space.peetseater.game.grid.GridSpace;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Objects;
 
 public class Match<T> {
@@ -35,7 +37,31 @@ public class Match<T> {
     }
 
     public boolean isLegal() {
-        return this.spaces.size() >= this.minMatchLength;
+        LinkedHashMap<Integer, Integer> numberOfSpacesByRow = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Integer> numberOfSpacesByColumn = new LinkedHashMap<>();
+        for (GridSpace<T> space : this.spaces) {
+            int columnCount = numberOfSpacesByColumn.getOrDefault(space.getColumn(), 0);
+            int rowCount = numberOfSpacesByRow.getOrDefault(space.getRow(), 0);
+            numberOfSpacesByColumn.put(space.getColumn(), ++columnCount);
+            numberOfSpacesByRow.put(space.getRow(), ++rowCount);
+        }
+
+        this.values.clear();
+        ListIterator<GridSpace<T>> listIterator = this.spaces.listIterator();
+        while(listIterator.hasNext()) {
+            GridSpace<T> space = listIterator.next();
+            int numSpacesSharingColumn = numberOfSpacesByColumn.get(space.getColumn());
+            int numSpacesSharingRow = numberOfSpacesByRow.get(space.getRow());
+            boolean partOfHorizontalMatch = numSpacesSharingColumn >= minMatchLength;
+            boolean partOfVerticalMatch = numSpacesSharingRow >= minMatchLength;
+            if (partOfVerticalMatch || partOfHorizontalMatch) {
+                values.add(space.getValue());
+            } else {
+                listIterator.remove();
+            }
+        }
+
+        return this.spaces.size() >= minMatchLength;
     }
 
     public LinkedList<T> getValues() {

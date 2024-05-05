@@ -1,10 +1,12 @@
 package space.peetseater.game.grid.match;
 
+import com.badlogic.gdx.math.MathUtils;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
-import space.peetseater.game.grid.commands.ShiftToken;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Stack;
 
 abstract public class AbstractMatcher<T> {
     protected final GameGrid<T> grid;
@@ -15,66 +17,51 @@ abstract public class AbstractMatcher<T> {
 
     public abstract List<Match<T>> findMatches();
 
-    public void _searchDir(int row, int column, int depth, ShiftToken.Direction direction, Match<T> currentMatch) {
-        if (row < 0 || column < 0 || row > grid.getHeight() - 1 || column > grid.getWidth() - 1) {
-            // We are out of bounds.
-            return;
-        }
-
-        GridSpace<T> space = grid.getTile(row, column);
-        if (!currentMatch.matches(space)) {
-            return;
-        }
-
-        if (depth >= currentMatch.getMinMatchLength() * 2) {
-            return;
-        }
-
-        currentMatch.addMatch(space);
-
-        switch (direction) {
-            case UP:
-                _searchDir(row + 1, column,  + 1, direction, currentMatch);
-                break;
-            case DOWN:
-                _searchDir(row - 1, column,  + 1, direction, currentMatch);
-                break;
-            case LEFT:
-                 _searchDir(row, column - 1,  + 1, direction, currentMatch);
-                break;
-            case RIGHT:
-                _searchDir(row, column + 1,  + 1, direction, currentMatch);
-                break;
-        }
-    }
-
     public Match<T> search(int row, int column) {
         return search(row, column, Match.DEFAULT_MIN_MATCH_LENGTH);
     }
 
     public Match<T> search(int row, int column, int minimumMatchLength) {
         GridSpace<T> space = grid.getTile(row, column);
-        Match<T> vMatch = new Match<>(space, minimumMatchLength);
-        Match<T> hMatch = new Match<>(space, minimumMatchLength);
-        _searchDir(row  + 1, column, 1, ShiftToken.Direction.UP, vMatch);
-        _searchDir(row - 1, column, 1, ShiftToken.Direction.DOWN, vMatch);
-        _searchDir(row, column - 1, 1, ShiftToken.Direction.LEFT, hMatch);
-        _searchDir(row, column + 1, 1, ShiftToken.Direction.RIGHT, hMatch);
-        Match<T> m = new Match<>(space);
-        if (vMatch.isLegal()) {
-            for (GridSpace<T> gs : vMatch.getSpaces()) {
-                if (gs != space) {
-                    m.addMatch(gs);
-                }
-            }
+        Match<T> m = new Match<>(space, minimumMatchLength);
+        T value = space.getValue();
+        if (null == value) {
+            return m;
         }
-        if (hMatch.isLegal()) {
-            for (GridSpace<T> gs : hMatch.getSpaces()) {
-                if (gs != space) {
-                    m.addMatch(gs);
-                }
+
+        LinkedHashSet<GridSpace<T>> seen = new LinkedHashSet<>(3);
+        Stack<GridSpace<T>> toVisit = new Stack<>();
+        toVisit.push(space);
+        while(!toVisit.isEmpty()) {
+            GridSpace<T> curr = toVisit.pop();
+            if (seen.contains(curr)) {
+                continue;
             }
+            seen.add(curr);
+            if (!value.equals(curr.getValue())) {
+                continue;
+            }
+
+            if (curr != space) {
+                m.addMatch(curr);
+            }
+
+            int r = curr.getRow();
+            int c = curr.getColumn();
+            int aboveR = MathUtils.clamp(r + 1, 0, grid.getHeight() - 1);
+            int belowR = MathUtils.clamp(r - 1, 0, grid.getHeight() - 1);
+            int leftC = MathUtils.clamp(c - 1, 0, grid.getWidth() - 1);
+            int rightC = MathUtils.clamp(c + 1, 0, grid.getWidth() - 1);
+
+            toVisit.push(grid.getTile(aboveR, c));
+            toVisit.push(grid.getTile(r, rightC));
+            toVisit.push(grid.getTile(belowR, c));
+            toVisit.push(grid.getTile(r, leftC));
         }
-        return m;
+
+        if (m.isLegal()) {
+            return m;
+        }
+        return new Match<>(space, minimumMatchLength);
     }
 }
