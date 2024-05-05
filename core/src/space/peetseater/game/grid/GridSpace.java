@@ -18,6 +18,11 @@ public class GridSpace<T> {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "GridSpace (c:" + column + ", r:" + row + ") v: " + value;
+    }
+
     public boolean isFilled() {
         return value != null;
     }
