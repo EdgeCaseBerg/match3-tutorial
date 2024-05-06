@@ -9,7 +9,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
-		config.setWindowedMode(Match3Game.GAME_WIDTH * 72, Match3Game.GAME_HEIGHT * 72);
+		config.setWindowedMode(Constants.GAME_WIDTH * 72, Constants.GAME_HEIGHT * 72);
 		config.setTitle("Match3Tutorial");
 		new Lwjgl3Application(new Match3Game(), config);
 	}

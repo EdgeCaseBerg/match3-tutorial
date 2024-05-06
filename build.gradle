@@ -59,6 +59,8 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.0"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.10.0"
+        implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
     }
 
     test {
