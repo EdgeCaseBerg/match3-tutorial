@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import space.peetseater.game.Constants;
+import space.peetseater.game.Match3Assets;
 import space.peetseater.game.TestTexture;
 import space.peetseater.game.grid.commands.ShiftToken;
 import space.peetseater.game.shared.MovablePoint;
@@ -20,11 +21,13 @@ import java.util.List;
 import static space.peetseater.game.Constants.*;
 
 public class BoardGraphic {
+    private final Match3Assets match3Assets;
     protected MovablePoint movablePoint;
     private final Texture texture;
     public final GameGrid<TileGraphic> gameGrid;
-    public BoardGraphic(final Vector2 position, GameGrid<TileType> sourceOfTruth) {
+    public BoardGraphic(final Vector2 position, GameGrid<TileType> sourceOfTruth, Match3Assets match3Assets) {
         this.movablePoint = new MovablePoint(position);
+        this.match3Assets = match3Assets;
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
         this.gameGrid = new GameGrid<>(sourceOfTruth.getWidth(), sourceOfTruth.getHeight());
         initializeGrid(sourceOfTruth);
@@ -38,7 +41,7 @@ public class BoardGraphic {
             float tx = screenXFromGridColumn(tileGraphicGameGrid.getColumn());
             Vector2 offsetPosition = new Vector2(tx, ty);
 
-            TileGraphic tileGraphic = new TileGraphic(offsetPosition, tokenSpace.getValue());
+            TileGraphic tileGraphic = new TileGraphic(offsetPosition, tokenSpace.getValue(), match3Assets);
             tileGraphicGameGrid.setValue(tileGraphic);
         }
     }
@@ -88,7 +91,7 @@ public class BoardGraphic {
         } else {
             position = new Vector2(tx, aboveBoard);
         }
-        space.setValue(new TileGraphic(position, tileType));
+        space.setValue(new TileGraphic(position, tileType, match3Assets));
         space.getValue().handleCommand(new MoveTowards(new Vector2(tx, ty)));
     }
 

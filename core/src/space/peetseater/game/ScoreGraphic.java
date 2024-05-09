@@ -25,8 +25,9 @@ public class ScoreGraphic implements MatchSubscriber<TileType> {
     private final Texture texture;
 
     private LinkedList<TileGraphic> inFlightMatches;
+    private Match3Assets match3Assets;
 
-    public ScoreGraphic(Vector2 position, BoardGraphic boardGraphic) {
+    public ScoreGraphic(Vector2 position, BoardGraphic boardGraphic, Match3Assets match3Assets) {
         this.scoringCalculator = new ScoringCalculator();
         inFlightMatches = new LinkedList<>();
         this.movablePoint = new MovablePoint(position);
@@ -35,6 +36,7 @@ public class ScoreGraphic implements MatchSubscriber<TileType> {
         // this after making some form of class for the match particles
         this.boardGraphic = boardGraphic;
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
+        this.match3Assets = match3Assets;
     }
     void render(float delta, SpriteBatch spriteBatch, BitmapFont bitmapFont) {
         float cornerX = movablePoint.getPosition().x;
@@ -76,7 +78,7 @@ public class ScoreGraphic implements MatchSubscriber<TileType> {
                 // Move the tile graphics to the score window
                 float ty = boardGraphic.screenYFromGridRow(space.getRow());
                 float tx = boardGraphic.screenXFromGridColumn(space.getColumn());
-                TileGraphic tileGraphic = new TileGraphic(new Vector2(tx, ty), match.getValues().get(0));
+                TileGraphic tileGraphic = new TileGraphic(new Vector2(tx, ty), match.getValues().get(0), match3Assets);
                 tileGraphic.getMovablePoint().setDestination(movablePoint.getPosition());
                 inFlightMatches.add(tileGraphic);
             }

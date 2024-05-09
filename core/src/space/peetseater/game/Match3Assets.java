@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import space.peetseater.game.tile.TileType;
 
 import static space.peetseater.game.Constants.*;
 
@@ -17,6 +18,13 @@ public class Match3Assets {
 
     public static final String BACKGROUND_TEXTURE_KEY = "textures/stringstar-fields-example-bg.png";
     public static String SCORE_FONT_KEY = "scorefont.ttf";
+
+    public static final String TOKEN_SPRITE_SHEET_KEY = "textures/tokens/tokens.png";
+
+    public static final int TOKEN_SPRITE_PIXEL_WIDTH = 32;
+    public static final int TOKEN_SPRITE_PIXEL_HEIGHT = 32;
+    public static final int TOKEN_SPRITE_IDLE_START = 0;
+    public static final int TOKEN_SPRITE_SELECTED_START = 32;
 
     AssetManager assetManager;
     public Match3Assets() {
@@ -29,6 +37,7 @@ public class Match3Assets {
     public boolean loadEssentialAssets() {
         queueFont(0.5f, SCORE_FONT_KEY);
         queueBackgroundTexture();
+        queueTokenSheetTexture();
         assetManager.finishLoading();
         return assetManager.update();
     }
@@ -71,5 +80,33 @@ public class Match3Assets {
             return assetManager.get(BACKGROUND_TEXTURE_KEY, Texture.class);
         }
         return TestTexture.makeTexture(Color.BLACK);
+    }
+
+    public void queueTokenSheetTexture() {
+        assetManager.load(TOKEN_SPRITE_SHEET_KEY, Texture.class);
+    }
+
+    public Texture getTokenSheetTexture() {
+        return assetManager.get(TOKEN_SPRITE_SHEET_KEY, Texture.class);
+    }
+
+    public void unloadTokenSheetTexture() {
+        assetManager.unload(TOKEN_SPRITE_SHEET_KEY);
+    }
+
+    public int getStartYOfTokenInSheet(TileType tileType) {
+        switch (tileType) {
+            case HighValue:
+                return 0 * TOKEN_SPRITE_PIXEL_HEIGHT;
+            case MidValue:
+                return 1 * TOKEN_SPRITE_PIXEL_HEIGHT;
+            case LowValue:
+                return 2 * TOKEN_SPRITE_PIXEL_HEIGHT;
+            case Multiplier:
+                return 3 * TOKEN_SPRITE_PIXEL_HEIGHT;
+            case Negative:
+                return 4 * TOKEN_SPRITE_PIXEL_HEIGHT;
+        }
+        return 0;
     }
 }

@@ -50,8 +50,8 @@ public class Match3Game extends ApplicationAdapter {
 		for (GridSpace<TileType> gridSpace : tokenGrid) {
 			gridSpace.setValue(tokenAlgorithm.next(gridSpace.getRow(), gridSpace.getColumn()));
 		}
-		boardGraphic = new BoardGraphic(boardPosition, tokenGrid);
-		scoreGraphic = new ScoreGraphic(scorePosition, boardGraphic);
+		boardGraphic = new BoardGraphic(boardPosition, tokenGrid, match3Assets);
+		scoreGraphic = new ScoreGraphic(scorePosition, boardGraphic, match3Assets);
 		camera = new OrthographicCamera();
 		viewport = new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera);
 		camera.setToOrtho(false);
