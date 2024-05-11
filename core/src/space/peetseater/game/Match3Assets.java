@@ -26,6 +26,11 @@ public class Match3Assets {
     public static final int TOKEN_SPRITE_IDLE_START = 0;
     public static final int TOKEN_SPRITE_SELECTED_START = 32;
 
+    public static final String SPARKLE_SHEET_KEY = "textures/sparkle.png";
+
+    public static final int SPARKLE_SPRITE_WIDTH = 9;
+    public static final int SPARKLE_SPRITE_HEIGHT = 9;
+
     AssetManager assetManager;
     public Match3Assets() {
         assetManager = new AssetManager();
@@ -38,6 +43,7 @@ public class Match3Assets {
         queueFont(0.5f, SCORE_FONT_KEY);
         queueBackgroundTexture();
         queueTokenSheetTexture();
+        queueSparkleSheetTexture();
         assetManager.finishLoading();
         return assetManager.update();
     }
@@ -109,4 +115,17 @@ public class Match3Assets {
         }
         return 0;
     }
+
+    public void queueSparkleSheetTexture() {
+        assetManager.load(SPARKLE_SHEET_KEY, Texture.class);
+    }
+
+    public Texture getSparkleSheetTexture() {
+        return assetManager.get(SPARKLE_SHEET_KEY, Texture.class);
+    }
+
+    public void unloadSparkleSheetTexture() {
+        assetManager.unload(SPARKLE_SHEET_KEY);
+    }
+
 }

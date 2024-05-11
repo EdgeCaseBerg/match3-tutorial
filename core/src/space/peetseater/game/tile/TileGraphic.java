@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Disposable;
 import space.peetseater.game.Match3Assets;
 import space.peetseater.game.shared.Command;
 import space.peetseater.game.shared.MovablePoint;
+import space.peetseater.game.shared.SparkleGraphic;
 import space.peetseater.game.states.LinearMovementBehavior;
 import space.peetseater.game.tile.states.NotSelected;
 
@@ -26,10 +27,11 @@ public class TileGraphic implements Disposable {
     TileGraphicState state;
     LinearMovementBehavior positionState;
     MovablePoint movablePoint;
-
+    SparkleGraphic sparkleGraphic;
     public TileGraphic(Vector2 position, TileType tileType, Match3Assets match3Assets) {
         this.tileType = tileType;
         Texture sheet = match3Assets.getTokenSheetTexture();
+        sparkleGraphic = new SparkleGraphic(position, match3Assets, TILE_UNIT_HEIGHT);
         int y = match3Assets.getStartYOfTokenInSheet(tileType);
         this.idleTextureRegion = new TextureRegion(sheet, TOKEN_SPRITE_IDLE_START, y, TOKEN_SPRITE_PIXEL_WIDTH, TOKEN_SPRITE_PIXEL_HEIGHT);
         this.selectedTextureRegion = new TextureRegion(sheet, TOKEN_SPRITE_SELECTED_START, y, TOKEN_SPRITE_PIXEL_WIDTH, TOKEN_SPRITE_PIXEL_HEIGHT);
@@ -43,6 +45,7 @@ public class TileGraphic implements Disposable {
     public void render(float delta, SpriteBatch batch) {
         update(delta);
         batch.draw(texture, movablePoint.getPosition().x, movablePoint.getPosition().y, TILE_UNIT_WIDTH, TILE_UNIT_HEIGHT);
+        sparkleGraphic.render(delta, batch);
     }
 
     public void update(float delta) {
@@ -63,14 +66,17 @@ public class TileGraphic implements Disposable {
 
     public void useSelectedTexture() {
         texture = selectedTextureRegion;
+        sparkleGraphic.setEnabled(false);
     }
 
     public void useNotSelectedTexture() {
         texture = idleTextureRegion;
+        sparkleGraphic.setEnabled(false);
     }
 
     public void useMatchedTexture() {
         texture = selectedTextureRegion;
+        sparkleGraphic.setEnabled(true);
     }
 
     public void setState(TileGraphicState newState) {
