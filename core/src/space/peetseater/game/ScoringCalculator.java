@@ -37,7 +37,7 @@ public class ScoringCalculator {
         }
 
         int matchScore = 0;
-        boolean negativeUsed = false;
+        int negativeScore = 0;
         for (Match<TileType> match : matches) {
             if (match.getValues().peek().equals(TileType.Multiplier)) {
                 multiplier += (match.getValues().size() - match.getMinMatchLength() + 1);
@@ -48,8 +48,7 @@ public class ScoringCalculator {
                     case MidValue: matchScore += 2; break;
                     case HighValue: matchScore += 3; break;
                     case Negative:
-                        matchScore -= 2;
-                        negativeUsed = true;
+                        negativeScore += 2;
                         break;
                     case Multiplier:
                     default:
@@ -57,10 +56,10 @@ public class ScoringCalculator {
                 }
             }
         }
-        score += matchScore * multiplier;
+        score += (matchScore - negativeScore) * multiplier;
         setScore(MathUtils.clamp(score, 0, Integer.MAX_VALUE));
         // Reset multiplier if we just used it.
-        if (multiplier != 1 && matchScore > 0 || negativeUsed) {
+        if (multiplier != 1 && matchScore > 0 || negativeScore != 0) {
             multiplier = 1;
         }
     }
