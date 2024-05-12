@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class ScoreGraphic implements MatchSubscriber<TileType>, Disposable {
+public class ScoreManager implements MatchSubscriber<TileType>, Disposable {
 
     private final ScoringCalculator scoringCalculator;
     private final MovablePoint movablePoint;
@@ -32,7 +32,7 @@ public class ScoreGraphic implements MatchSubscriber<TileType>, Disposable {
     private Sound scoreUpSFX;
     private Sound negativeSFX;
 
-    public ScoreGraphic(Vector2 position, BoardManager boardManager, Match3Assets match3Assets) {
+    public ScoreManager(Vector2 position, BoardManager boardManager, Match3Assets match3Assets) {
         this.scoringCalculator = new ScoringCalculator();
         inFlightMatches = new LinkedList<>();
         this.movablePoint = new MovablePoint(position);

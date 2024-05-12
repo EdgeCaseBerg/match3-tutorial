@@ -34,7 +34,7 @@ public class Match3Game extends ApplicationAdapter {
 	String algo = "WillNotMatch";
 	private DragInputAdapter dragInputAdapter;
 	Match3GameState match3GameState;
-	ScoreGraphic scoreGraphic;
+	ScoreManager scoreManager;
 	Match3Assets match3Assets;
 	private Texture bgTexture;
 
@@ -51,13 +51,13 @@ public class Match3Game extends ApplicationAdapter {
 			gridSpace.setValue(tokenAlgorithm.next(gridSpace.getRow(), gridSpace.getColumn()));
 		}
 		boardManager = new BoardManager(boardPosition, tokenGrid, match3Assets);
-		scoreGraphic = new ScoreGraphic(scorePosition, boardManager, match3Assets);
+		scoreManager = new ScoreManager(scorePosition, boardManager, match3Assets);
 		camera = new OrthographicCamera();
 		viewport = new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera);
 		camera.setToOrtho(false);
 		camera.update();
 		this.match3GameState = new Match3GameState(boardManager, tokenGrid, tokenAlgorithm);
-		this.match3GameState.addSubscriber(scoreGraphic);
+		this.match3GameState.addSubscriber(scoreManager);
 		this.dragInputAdapter = new DragInputAdapter(viewport);
 		this.dragInputAdapter.addSubscriber(match3GameState);
 		Gdx.input.setInputProcessor(dragInputAdapter);
@@ -96,7 +96,7 @@ public class Match3Game extends ApplicationAdapter {
 		batch.begin();
 		batch.draw(bgTexture, 0, 0, GAME_WIDTH, GAME_HEIGHT);
 		boardManager.render(delta, batch);
-		scoreGraphic.render(delta, batch, font);
+		scoreManager.render(delta, batch, font);
 
 		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, 3);
 		font.draw(batch, algo, 10, 2);
@@ -121,7 +121,7 @@ public class Match3Game extends ApplicationAdapter {
 
 	public void update(float delta) {
 		match3GameState.update(delta);
-		scoreGraphic.update(delta);
+		scoreManager.update(delta);
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class Match3Game extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		scoreGraphic.dispose();
+		scoreManager.dispose();
 		boardManager.dispose();
 		match3Assets.dispose();
 	}
