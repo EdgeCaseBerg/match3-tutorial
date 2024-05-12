@@ -1,0 +1,3 @@
+https://jdwasabi.itch.io/8-bit-16-bit-sound-effects-pack
+
+converted to mp3 because libgdx can't load 24 bit samples.
