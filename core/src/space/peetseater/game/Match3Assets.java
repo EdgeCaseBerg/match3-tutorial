@@ -4,19 +4,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.utils.Disposable;
+import space.peetseater.game.shared.EmptySound;
 import space.peetseater.game.tile.TileType;
 
 import static space.peetseater.game.Constants.*;
 
-public class Match3Assets {
+public class Match3Assets implements Disposable {
 
     public static final String BACKGROUND_TEXTURE_KEY = "textures/stringstar-fields-example-bg.png";
+
     public static String SCORE_FONT_KEY = "scorefont.ttf";
 
     public static final String TOKEN_SPRITE_SHEET_KEY = "textures/tokens/tokens.png";
@@ -31,7 +35,15 @@ public class Match3Assets {
     public static final int SPARKLE_SPRITE_WIDTH = 9;
     public static final int SPARKLE_SPRITE_HEIGHT = 9;
 
+
+    public static final String SCORE_SFX_KEY = "sound/8-bit-16-bit-sound-effects-pack/Big Egg collect 1.mp3";
+    public static final String MULTIPLIER_SFX_KEY = "sound/--Pixelated UI/Pixel_08.wav";
+    public static final String SELECT_SFX_KEY = "sound/8-bit-16-bit-sound-effects-pack/Bubble 1.mp3";
+    public static final String NEGATIVE_SFX_KEY = "sound/--Pixelated UI/Pixel_11.wav";
+
     AssetManager assetManager;
+    private final Sound emptySound = new EmptySound();
+
     public Match3Assets() {
         assetManager = new AssetManager();
         FileHandleResolver resolver = assetManager.getFileHandleResolver();
@@ -44,6 +56,7 @@ public class Match3Assets {
         queueBackgroundTexture();
         queueTokenSheetTexture();
         queueSparkleSheetTexture();
+        queueSounds();
         assetManager.finishLoading();
         return assetManager.update();
     }
@@ -128,4 +141,54 @@ public class Match3Assets {
         assetManager.unload(SPARKLE_SHEET_KEY);
     }
 
+    public void queueSounds() {
+        assetManager.load(SCORE_SFX_KEY, Sound.class);
+        assetManager.load(MULTIPLIER_SFX_KEY, Sound.class);
+        assetManager.load(SELECT_SFX_KEY, Sound.class);
+        assetManager.load(NEGATIVE_SFX_KEY, Sound.class);
+    }
+
+    private Sound getSFXOrEmpty(String key) {
+        if (assetManager.isLoaded(key)) {
+            return assetManager.get(key, Sound.class);
+        }
+        return emptySound;
+    }
+
+    public Sound getMultiplierSFX() {
+        return getSFXOrEmpty(MULTIPLIER_SFX_KEY);
+    }
+
+    public void unloadMultiplierSFX() {
+        assetManager.unload(MULTIPLIER_SFX_KEY);
+    }
+
+    public Sound getIncrementScoreSFX() {
+        return getSFXOrEmpty(SCORE_SFX_KEY);
+    }
+
+    public void unloadIncrementScoreSFX() {
+        assetManager.unload(SCORE_SFX_KEY);
+    }
+
+    public Sound getSelectSFX() {
+        return getSFXOrEmpty(SELECT_SFX_KEY);
+    }
+
+    public void unloadSelectSFX() {
+        assetManager.unload(SELECT_SFX_KEY);
+    }
+
+    public Sound getNegativeSFX() {
+        return getSFXOrEmpty(NEGATIVE_SFX_KEY);
+    }
+
+    public void unloadNegativeSFX() {
+        assetManager.unload(NEGATIVE_SFX_KEY);
+    }
+
+    @Override
+    public void dispose() {
+        assetManager.dispose();
+    }
 }

@@ -1,10 +1,12 @@
 package space.peetseater.game;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Disposable;
 import space.peetseater.game.grid.BoardGraphic;
 import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.grid.match.Match;
@@ -17,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class ScoreGraphic implements MatchSubscriber<TileType> {
+public class ScoreGraphic implements MatchSubscriber<TileType>, Disposable {
 
     private final ScoringCalculator scoringCalculator;
     private final MovablePoint movablePoint;
@@ -26,6 +28,9 @@ public class ScoreGraphic implements MatchSubscriber<TileType> {
 
     private LinkedList<TileGraphic> inFlightMatches;
     private Match3Assets match3Assets;
+    private Sound multiplierSFX;
+    private Sound scoreUpSFX;
+    private Sound negativeSFX;
 
     public ScoreGraphic(Vector2 position, BoardGraphic boardGraphic, Match3Assets match3Assets) {
         this.scoringCalculator = new ScoringCalculator();
@@ -37,6 +42,9 @@ public class ScoreGraphic implements MatchSubscriber<TileType> {
         this.boardGraphic = boardGraphic;
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
         this.match3Assets = match3Assets;
+        this.multiplierSFX = match3Assets.getMultiplierSFX();
+        this.scoreUpSFX = match3Assets.getIncrementScoreSFX();
+        this.negativeSFX = match3Assets.getNegativeSFX();
     }
     void render(float delta, SpriteBatch spriteBatch, BitmapFont bitmapFont) {
         float cornerX = movablePoint.getPosition().x;
@@ -64,6 +72,19 @@ public class ScoreGraphic implements MatchSubscriber<TileType> {
         while (iter.hasNext()) {
             TileGraphic tileGraphic = iter.next();
             if (tileGraphic.getMovablePoint().isAtDestination()) {
+                switch (tileGraphic.getTileType()) {
+                    case Multiplier:
+                        multiplierSFX.stop();
+                        multiplierSFX.play();
+                        break;
+                    case Negative:
+                        negativeSFX.stop();
+                        negativeSFX.play();
+                        break;
+                    default:
+                        scoreUpSFX.stop();
+                        scoreUpSFX.play();
+                }
                 iter.remove();
             }
             tileGraphic.update(delta);
@@ -84,5 +105,13 @@ public class ScoreGraphic implements MatchSubscriber<TileType> {
             }
         }
         scoringCalculator.addToScore(matches);
+    }
+
+    @Override
+    public void dispose() {
+        match3Assets.unloadMultiplierSFX();
+        match3Assets.unloadIncrementScoreSFX();
+        match3Assets.unloadNegativeSFX();
+        this.texture.dispose();
     }
 }

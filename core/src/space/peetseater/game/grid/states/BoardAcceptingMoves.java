@@ -5,10 +5,7 @@ import space.peetseater.game.Constants;
 import space.peetseater.game.grid.BoardGraphic;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
-import space.peetseater.game.grid.commands.HighlightMatchesOnBoard;
-import space.peetseater.game.grid.commands.RepositionCrossSection;
-import space.peetseater.game.grid.commands.SelectCrossSection;
-import space.peetseater.game.grid.commands.ShiftToken;
+import space.peetseater.game.grid.commands.*;
 import space.peetseater.game.grid.match.CrossSectionTileMatcher;
 import space.peetseater.game.grid.match.Match;
 import space.peetseater.game.shared.Command;
@@ -56,18 +53,17 @@ public class BoardAcceptingMoves implements BoardState {
         this.selected = this.boardGraphic.getTile(row, column);
         this.crossSection = new SelectCrossSection(boardGraphic, row, column);
         this.commands.add(crossSection);
+        this.commands.add(new PlaySelectSFX(boardGraphic));
         this.commands.add(new IncludeInMatch(selected));
     }
 
     @Override
     public void onDrag(float gameX, float gameY) {
-        int row = this.boardGraphic.gameYToRow(gameY);
-        int column = this.boardGraphic.gameXToColumn(gameX);
-
         if (crossSection == null) {
             return;
         }
-
+        int row = this.boardGraphic.gameYToRow(gameY);
+        int column = this.boardGraphic.gameXToColumn(gameX);
         int startRow = crossSection.getRow();
         int startColumn = crossSection.getColumn();
 
@@ -93,6 +89,7 @@ public class BoardAcceptingMoves implements BoardState {
                 }
                 // Re-select the cross section so we don't lose our allowed moves
                 commands.add(crossSection);
+                commands.add(new PlaySelectSFX(boardGraphic));
                 commands.add(new HighlightMatchesOnBoard(boardGraphic.gameGrid, startRow, startColumn));
             }
 

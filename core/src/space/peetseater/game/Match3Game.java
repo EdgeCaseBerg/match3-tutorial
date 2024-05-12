@@ -134,5 +134,8 @@ public class Match3Game extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
+		scoreGraphic.dispose();
+		boardGraphic.dispose();
+		match3Assets.dispose();
 	}
 }

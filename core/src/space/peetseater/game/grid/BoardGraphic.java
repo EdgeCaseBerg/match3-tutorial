@@ -1,14 +1,15 @@
 package space.peetseater.game.grid;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Disposable;
 import space.peetseater.game.Constants;
 import space.peetseater.game.Match3Assets;
 import space.peetseater.game.TestTexture;
-import space.peetseater.game.grid.commands.ShiftToken;
 import space.peetseater.game.shared.MovablePoint;
 import space.peetseater.game.shared.commands.MoveTowards;
 import space.peetseater.game.tile.TileGraphic;
@@ -20,8 +21,9 @@ import java.util.List;
 
 import static space.peetseater.game.Constants.*;
 
-public class BoardGraphic {
-    private final Match3Assets match3Assets;
+public class BoardGraphic implements Disposable {
+    public final Match3Assets match3Assets;
+    private final Sound selectSFX;
     protected MovablePoint movablePoint;
     private final Texture texture;
     public final GameGrid<TileGraphic> gameGrid;
@@ -29,6 +31,7 @@ public class BoardGraphic {
         this.movablePoint = new MovablePoint(position);
         this.match3Assets = match3Assets;
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
+        this.selectSFX = match3Assets.getSelectSFX();
         this.gameGrid = new GameGrid<>(sourceOfTruth.getWidth(), sourceOfTruth.getHeight());
         initializeGrid(sourceOfTruth);
     }
@@ -46,8 +49,9 @@ public class BoardGraphic {
         }
     }
 
-    public void applyMoves(List<ShiftToken> moves) {
-        gameGrid.applyMoves(moves);
+    public void playSelectSFX() {
+        selectSFX.stop();
+        selectSFX.play();
     }
 
     public float screenYFromGridRow(int row) {
@@ -172,5 +176,11 @@ public class BoardGraphic {
 
     public TileGraphic getTile(int row, int column) {
         return this.gameGrid.getTile(row, column).getValue();
+    }
+
+    @Override
+    public void dispose() {
+        match3Assets.unloadSelectSFX();
+        texture.dispose();
     }
 }
