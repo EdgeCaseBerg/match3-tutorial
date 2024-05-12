@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import space.peetseater.game.grid.BoardGraphic;
+import space.peetseater.game.grid.BoardManager;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.states.Match3GameState;
@@ -25,7 +25,7 @@ import static space.peetseater.game.Constants.GAME_WIDTH;
 
 public class Match3Game extends ApplicationAdapter {
 	SpriteBatch batch;
-	private BoardGraphic boardGraphic;
+	private BoardManager boardManager;
 	GameGrid<TileType> tokenGrid;
 	private BitmapFont font;
 	private OrthographicCamera camera;
@@ -50,13 +50,13 @@ public class Match3Game extends ApplicationAdapter {
 		for (GridSpace<TileType> gridSpace : tokenGrid) {
 			gridSpace.setValue(tokenAlgorithm.next(gridSpace.getRow(), gridSpace.getColumn()));
 		}
-		boardGraphic = new BoardGraphic(boardPosition, tokenGrid, match3Assets);
-		scoreGraphic = new ScoreGraphic(scorePosition, boardGraphic, match3Assets);
+		boardManager = new BoardManager(boardPosition, tokenGrid, match3Assets);
+		scoreGraphic = new ScoreGraphic(scorePosition, boardManager, match3Assets);
 		camera = new OrthographicCamera();
 		viewport = new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera);
 		camera.setToOrtho(false);
 		camera.update();
-		this.match3GameState = new Match3GameState(boardGraphic, tokenGrid, tokenAlgorithm);
+		this.match3GameState = new Match3GameState(boardManager, tokenGrid, tokenAlgorithm);
 		this.match3GameState.addSubscriber(scoreGraphic);
 		this.dragInputAdapter = new DragInputAdapter(viewport);
 		this.dragInputAdapter.addSubscriber(match3GameState);
@@ -95,7 +95,7 @@ public class Match3Game extends ApplicationAdapter {
 		ScreenUtils.clear(Color.BLACK);
 		batch.begin();
 		batch.draw(bgTexture, 0, 0, GAME_WIDTH, GAME_HEIGHT);
-		boardGraphic.render(delta, batch);
+		boardManager.render(delta, batch);
 		scoreGraphic.render(delta, batch, font);
 
 		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, 3);
@@ -110,7 +110,7 @@ public class Match3Game extends ApplicationAdapter {
 		);
 		if (dragInputAdapter.isDragging) {
 			font.draw(batch,
-					boardGraphic.gameXToColumn(dragInputAdapter.dragEnd.x) + " " + boardGraphic.gameYToRow(dragInputAdapter.dragEnd.y),
+					boardManager.gameXToColumn(dragInputAdapter.dragEnd.x) + " " + boardManager.gameYToRow(dragInputAdapter.dragEnd.y),
 					9, 6,
 					6f, Align.left, true
 			);
@@ -135,7 +135,7 @@ public class Match3Game extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		scoreGraphic.dispose();
-		boardGraphic.dispose();
+		boardManager.dispose();
 		match3Assets.dispose();
 	}
 }

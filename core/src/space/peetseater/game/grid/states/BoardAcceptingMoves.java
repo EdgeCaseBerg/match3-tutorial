@@ -2,7 +2,7 @@ package space.peetseater.game.grid.states;
 
 import com.badlogic.gdx.math.Vector2;
 import space.peetseater.game.Constants;
-import space.peetseater.game.grid.BoardGraphic;
+import space.peetseater.game.grid.BoardManager;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.grid.commands.*;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Queue;
 
 public class BoardAcceptingMoves implements BoardState {
-    private final BoardGraphic boardGraphic;
+    private final BoardManager boardManager;
     private final GameGrid<TileType> gameGrid;
     private final LinkedList<ShiftToken> dragMoves;
     private final Match3GameState match3GameState;
@@ -36,7 +36,7 @@ public class BoardAcceptingMoves implements BoardState {
 
     public BoardAcceptingMoves(Match3GameState match3GameState) {
         this.match3GameState = match3GameState;
-        this.boardGraphic = match3GameState.getBoardGraphic();
+        this.boardManager = match3GameState.getBoardGraphic();
         this.gameGrid = match3GameState.getGameGrid();
         this.commands = new LinkedList<>();
         this.selected = null;
@@ -48,12 +48,12 @@ public class BoardAcceptingMoves implements BoardState {
 
     @Override
     public void onDragStart(float gameX, float gameY) {
-        int row = this.boardGraphic.gameYToRow(gameY);
-        int column = this.boardGraphic.gameXToColumn(gameX);
-        this.selected = this.boardGraphic.getTile(row, column);
-        this.crossSection = new SelectCrossSection(boardGraphic, row, column);
+        int row = this.boardManager.gameYToRow(gameY);
+        int column = this.boardManager.gameXToColumn(gameX);
+        this.selected = this.boardManager.getTile(row, column);
+        this.crossSection = new SelectCrossSection(boardManager, row, column);
         this.commands.add(crossSection);
-        this.commands.add(new PlaySelectSFX(boardGraphic));
+        this.commands.add(new PlaySelectSFX(boardManager));
         this.commands.add(new IncludeInMatch(selected));
     }
 
@@ -62,8 +62,8 @@ public class BoardAcceptingMoves implements BoardState {
         if (crossSection == null) {
             return;
         }
-        int row = this.boardGraphic.gameYToRow(gameY);
-        int column = this.boardGraphic.gameXToColumn(gameX);
+        int row = this.boardManager.gameYToRow(gameY);
+        int column = this.boardManager.gameXToColumn(gameX);
         int startRow = crossSection.getRow();
         int startColumn = crossSection.getColumn();
 
@@ -75,13 +75,13 @@ public class BoardAcceptingMoves implements BoardState {
                 startMovesFromR = lastMove.getRow();
                 startMovesFromC = lastMove.getColumn();
             }
-            List<ShiftToken> newMoves = boardGraphic.gameGrid.getShiftsToMoveFromStartToEnd(startMovesFromR, startMovesFromC, row, column);
+            List<ShiftToken> newMoves = boardManager.gameGrid.getShiftsToMoveFromStartToEnd(startMovesFromR, startMovesFromC, row, column);
             commands.addAll(newMoves);
             dragMoves.addAll(newMoves);
 
             if (!newMoves.isEmpty()) {
                 // DeSelect any matches from the last update so we have a fresh slate
-                List<Match<TileGraphic>> matches = (new CrossSectionTileMatcher<>(startRow, startColumn, boardGraphic.gameGrid)).findMatches();
+                List<Match<TileGraphic>> matches = (new CrossSectionTileMatcher<>(startRow, startColumn, boardManager.gameGrid)).findMatches();
                 for (Match<TileGraphic> match : matches) {
                     for (TileGraphic tileGraphic : match.getValues()) {
                         commands.add(new DeselectTile(tileGraphic));
@@ -89,11 +89,11 @@ public class BoardAcceptingMoves implements BoardState {
                 }
                 // Re-select the cross section so we don't lose our allowed moves
                 commands.add(crossSection);
-                commands.add(new PlaySelectSFX(boardGraphic));
-                commands.add(new HighlightMatchesOnBoard(boardGraphic.gameGrid, startRow, startColumn));
+                commands.add(new PlaySelectSFX(boardManager));
+                commands.add(new HighlightMatchesOnBoard(boardManager.gameGrid, startRow, startColumn));
             }
 
-            lastMove = boardGraphic.gameGrid.getTile(row, column);
+            lastMove = boardManager.gameGrid.getTile(row, column);
         } else {
             // The user is hovering their mouse outside of the allowed move locations
             while (!dragMoves.isEmpty()) {
@@ -102,7 +102,7 @@ public class BoardAcceptingMoves implements BoardState {
             lastMove = null;
         }
 
-        commands.add(new RepositionCrossSection(boardGraphic, startRow, startColumn));
+        commands.add(new RepositionCrossSection(boardManager, startRow, startColumn));
 
         // Move Selected tile towards mouse
         float offsetByHalfX = gameX - Constants.TILE_UNIT_WIDTH / 2;
@@ -118,7 +118,7 @@ public class BoardAcceptingMoves implements BoardState {
 
         // Can remove this at some point. For now it's a good debug.
         Iterator<GridSpace<TileType>> tileTypeIter = gameGrid.iterator();
-        Iterator<GridSpace<TileGraphic>> tileGraphicIter = boardGraphic.gameGrid.iterator();
+        Iterator<GridSpace<TileGraphic>> tileGraphicIter = boardManager.gameGrid.iterator();
         while (tileGraphicIter.hasNext()) {
             TileType t = tileGraphicIter.next().getValue().getTileType();
             TileType tg = tileTypeIter.next().getValue();
@@ -132,15 +132,15 @@ public class BoardAcceptingMoves implements BoardState {
         this.commands.add(crossSection.undoCommand());
         this.commands.add(new DeselectTile(selected));
 
-        if (!this.boardGraphic.pointInBounds(gameX, gameY)) {
-            this.commands.add(new RepositionCrossSection(boardGraphic, crossSection.getRow(), crossSection.getColumn()));
+        if (!this.boardManager.pointInBounds(gameX, gameY)) {
+            this.commands.add(new RepositionCrossSection(boardManager, crossSection.getRow(), crossSection.getColumn()));
             this.selected = null;
             this.crossSection = null;
             return;
         }
 
-        int row = this.boardGraphic.gameYToRow(gameY);
-        int column = this.boardGraphic.gameXToColumn(gameX);
+        int row = this.boardManager.gameYToRow(gameY);
+        int column = this.boardManager.gameXToColumn(gameX);
 
         List<ShiftToken> moves = this.gameGrid.getShiftsToMoveFromStartToEnd(crossSection.getRow(), crossSection.getColumn(), row, column);
         this.hasMatches = gameGrid.testIfMovesValid(moves, new CrossSectionTileMatcher<>(crossSection.getRow(), crossSection.getColumn(), gameGrid));
@@ -148,13 +148,13 @@ public class BoardAcceptingMoves implements BoardState {
             this.commands.addAll(moves);
             for (ShiftToken shiftToken : moves) {
                 this.commands.add(
-                        new ShiftToken(shiftToken.startRow, shiftToken.startColumn, shiftToken.moveDirection, boardGraphic.gameGrid)
+                        new ShiftToken(shiftToken.startRow, shiftToken.startColumn, shiftToken.moveDirection, boardManager.gameGrid)
                 );
             }
-            this.commands.add(new HighlightMatchesOnBoard(boardGraphic.gameGrid, crossSection.getRow(), crossSection.getColumn()));
+            this.commands.add(new HighlightMatchesOnBoard(boardManager.gameGrid, crossSection.getRow(), crossSection.getColumn()));
         }
 
-        this.commands.add(new RepositionCrossSection(boardGraphic, crossSection.getRow(), crossSection.getColumn()));
+        this.commands.add(new RepositionCrossSection(boardManager, crossSection.getRow(), crossSection.getColumn()));
 
         this.selected = null;
         this.crossSection = null;
@@ -173,7 +173,7 @@ public class BoardAcceptingMoves implements BoardState {
 
         this.commands.add(crossSection.undoCommand());
         this.commands.add(new DeselectTile(selected));
-        this.commands.add(new RepositionCrossSection(boardGraphic, crossSection.getRow(), crossSection.getColumn()));
+        this.commands.add(new RepositionCrossSection(boardManager, crossSection.getRow(), crossSection.getColumn()));
         this.selected = null;
         this.crossSection = null;
         this.lastMove = null;

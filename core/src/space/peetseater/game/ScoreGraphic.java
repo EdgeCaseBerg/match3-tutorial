@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
-import space.peetseater.game.grid.BoardGraphic;
+import space.peetseater.game.grid.BoardManager;
 import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.grid.match.Match;
 import space.peetseater.game.grid.match.MatchSubscriber;
@@ -23,7 +23,7 @@ public class ScoreGraphic implements MatchSubscriber<TileType>, Disposable {
 
     private final ScoringCalculator scoringCalculator;
     private final MovablePoint movablePoint;
-    private final BoardGraphic boardGraphic;
+    private final BoardManager boardManager;
     private final Texture texture;
 
     private LinkedList<TileGraphic> inFlightMatches;
@@ -32,14 +32,14 @@ public class ScoreGraphic implements MatchSubscriber<TileType>, Disposable {
     private Sound scoreUpSFX;
     private Sound negativeSFX;
 
-    public ScoreGraphic(Vector2 position, BoardGraphic boardGraphic, Match3Assets match3Assets) {
+    public ScoreGraphic(Vector2 position, BoardManager boardManager, Match3Assets match3Assets) {
         this.scoringCalculator = new ScoringCalculator();
         inFlightMatches = new LinkedList<>();
         this.movablePoint = new MovablePoint(position);
         // TODO I don't like that I take this in to calc where to start
         // the tile graphics in flight path to the board. We can revisit
         // this after making some form of class for the match particles
-        this.boardGraphic = boardGraphic;
+        this.boardManager = boardManager;
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
         this.match3Assets = match3Assets;
         this.multiplierSFX = match3Assets.getMultiplierSFX();
@@ -97,8 +97,8 @@ public class ScoreGraphic implements MatchSubscriber<TileType>, Disposable {
         for (Match<TileType> match : matches) {
             for (GridSpace<?> space : match.getSpaces()) {
                 // Move the tile graphics to the score window
-                float ty = boardGraphic.screenYFromGridRow(space.getRow());
-                float tx = boardGraphic.screenXFromGridColumn(space.getColumn());
+                float ty = boardManager.screenYFromGridRow(space.getRow());
+                float tx = boardManager.screenXFromGridColumn(space.getColumn());
                 TileGraphic tileGraphic = new TileGraphic(new Vector2(tx, ty), match.getValues().get(0), match3Assets);
                 tileGraphic.getMovablePoint().setDestination(movablePoint.getPosition());
                 inFlightMatches.add(tileGraphic);

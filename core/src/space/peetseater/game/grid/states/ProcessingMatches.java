@@ -1,7 +1,7 @@
 package space.peetseater.game.grid.states;
 
 import com.badlogic.gdx.math.Vector2;
-import space.peetseater.game.grid.BoardGraphic;
+import space.peetseater.game.grid.BoardManager;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.grid.commands.ApplyGravityToColumn;
@@ -22,7 +22,7 @@ import java.util.*;
 
 public class ProcessingMatches implements BoardState, MatchEventPublisher<TileType> {
 
-    private final BoardGraphic boardGraphic;
+    private final BoardManager boardManager;
     private final GameGrid<TileType> gameGrid;
     private final LinkedList<Command> commands;
     private final HashSet<MatchSubscriber<TileType>> subscribers;
@@ -32,7 +32,7 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
 
     public ProcessingMatches(Match3GameState match3GameState) {
         this.match3GameState = match3GameState;
-        this.boardGraphic = match3GameState.getBoardGraphic();
+        this.boardManager = match3GameState.getBoardGraphic();
         this.gameGrid = match3GameState.getGameGrid();
         this.commands = new LinkedList<>();
         this.isDoneProcessing = false;
@@ -46,7 +46,7 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
         // and decrement a counter when they finish and when it's 0 then the board is
         // settled.
         boolean tilesMoving = false;
-        Iterator<GridSpace<TileGraphic>> iter2 = boardGraphic.gameGrid.iterator();
+        Iterator<GridSpace<TileGraphic>> iter2 = boardManager.gameGrid.iterator();
         while(iter2.hasNext()) {
             GridSpace<TileGraphic> tileGraphicGridSpace = iter2.next();
             if (tileGraphicGridSpace.isFilled()) {
@@ -68,7 +68,7 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
         this.isDoneProcessing = isDoneProcessing || newMatches.isEmpty();
 
         // Check for empty spaces that need to be filled, this will basically be ran on the next frame after the above commands in the queue have been processed.
-        Iterator<GridSpace<TileGraphic>> iter = boardGraphic.gameGrid.iterator();
+        Iterator<GridSpace<TileGraphic>> iter = boardManager.gameGrid.iterator();
         while(iter.hasNext()) {
             GridSpace<TileGraphic> tileGraphicGridSpace = iter.next();
             if (tileGraphicGridSpace.getValue() == null) {
@@ -101,14 +101,14 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
             this.commands.add(new ApplyGravityToColumn(column, gameGrid));
         }
 
-        FullGridTileMatcher<TileGraphic> tileMatcher2 = new FullGridTileMatcher<>(boardGraphic.gameGrid);
+        FullGridTileMatcher<TileGraphic> tileMatcher2 = new FullGridTileMatcher<>(boardManager.gameGrid);
         List<Match<TileGraphic>> graphicalMatches = tileMatcher2.findMatches();
 
-        List<ClearGridSpace> graphicClears = boardGraphic.gameGrid.getClearCommandsForMatches(graphicalMatches);
+        List<ClearGridSpace> graphicClears = boardManager.gameGrid.getClearCommandsForMatches(graphicalMatches);
         this.commands.addAll(graphicClears);
         for (Integer column : columnsToApplyGravityTo) {
-            this.commands.add(new ApplyGravityToColumn(column, boardGraphic.gameGrid));
-            this.commands.add(new RepositionColumn(column, boardGraphic));
+            this.commands.add(new ApplyGravityToColumn(column, boardManager.gameGrid));
+            this.commands.add(new RepositionColumn(column, boardManager));
         }
     }
 

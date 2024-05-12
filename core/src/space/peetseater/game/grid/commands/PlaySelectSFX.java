@@ -1,17 +1,17 @@
 package space.peetseater.game.grid.commands;
 
-import space.peetseater.game.grid.BoardGraphic;
+import space.peetseater.game.grid.BoardManager;
 import space.peetseater.game.shared.Command;
 
 public class PlaySelectSFX implements Command {
-    private final BoardGraphic boardGraphic;
+    private final BoardManager boardManager;
 
-    public PlaySelectSFX(BoardGraphic boardGraphic) {
-        this.boardGraphic = boardGraphic;
+    public PlaySelectSFX(BoardManager boardManager) {
+        this.boardManager = boardManager;
     }
 
     @Override
     public void execute() {
-        this.boardGraphic.playSelectSFX();
+        this.boardManager.playSelectSFX();
     }
 }

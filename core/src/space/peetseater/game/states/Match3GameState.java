@@ -1,7 +1,7 @@
 package space.peetseater.game.states;
 
 import space.peetseater.game.DragEventSubscriber;
-import space.peetseater.game.grid.BoardGraphic;
+import space.peetseater.game.grid.BoardManager;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.match.Match;
 import space.peetseater.game.grid.match.MatchEventPublisher;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Queue;
 
 public class Match3GameState implements DragEventSubscriber, MatchEventPublisher<TileType>, MatchSubscriber<TileType> {
-    private final BoardGraphic boardGraphic;
+    private final BoardManager boardManager;
 
     private TokenGeneratorAlgorithm<TileType> tokenAlgorithm;
     private final GameGrid<TileType> gameGrid;
@@ -26,8 +26,8 @@ public class Match3GameState implements DragEventSubscriber, MatchEventPublisher
     Queue<Command> commands;
     private final HashSet<MatchSubscriber<TileType>> subscribers;
 
-    public Match3GameState(BoardGraphic boardGraphic, GameGrid<TileType> gameGrid, TokenGeneratorAlgorithm<TileType> tokenAlgorithm) {
-        this.boardGraphic = boardGraphic;
+    public Match3GameState(BoardManager boardManager, GameGrid<TileType> gameGrid, TokenGeneratorAlgorithm<TileType> tokenAlgorithm) {
+        this.boardManager = boardManager;
         this.commands = new LinkedList<>();
         this.gameGrid = gameGrid;
         this.boardState = new BoardAcceptingMoves(this);
@@ -55,7 +55,7 @@ public class Match3GameState implements DragEventSubscriber, MatchEventPublisher
     }
 
     protected boolean pointNotInBoard(float gameX, float gameY) {
-        return !this.boardGraphic.pointInBounds(gameX, gameY);
+        return !this.boardManager.pointInBounds(gameX, gameY);
     }
 
     @Override
@@ -101,8 +101,8 @@ public class Match3GameState implements DragEventSubscriber, MatchEventPublisher
         }
     }
 
-    public BoardGraphic getBoardGraphic() {
-        return boardGraphic;
+    public BoardManager getBoardGraphic() {
+        return boardManager;
     }
 
     public GameGrid<TileType> getGameGrid() {

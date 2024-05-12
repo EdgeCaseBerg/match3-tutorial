@@ -1,11 +1,8 @@
 package space.peetseater.game.grid.commands;
 
-import space.peetseater.game.grid.BoardGraphic;
-import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.shared.Command;
 import space.peetseater.game.states.Match3GameState;
 import space.peetseater.game.tile.TileType;
-import space.peetseater.game.token.TokenGeneratorAlgorithm;
 
 public class DropTileToSpace implements Command {
     private final Match3GameState match3GameState;

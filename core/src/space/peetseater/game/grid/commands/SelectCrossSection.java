@@ -1,27 +1,27 @@
 package space.peetseater.game.grid.commands;
 
-import space.peetseater.game.grid.BoardGraphic;
+import space.peetseater.game.grid.BoardManager;
 import space.peetseater.game.shared.Command;
 
 public class SelectCrossSection implements Command {
 
-    private final BoardGraphic boardGraphic;
+    private final BoardManager boardManager;
     private final int row;
     private final int column;
 
-    public SelectCrossSection(BoardGraphic boardGraphic, int row, int column) {
-        this.boardGraphic = boardGraphic;
+    public SelectCrossSection(BoardManager boardManager, int row, int column) {
+        this.boardManager = boardManager;
         this.row = row;
         this.column = column;
     }
 
     @Override
     public void execute() {
-        this.boardGraphic.selectCrossSection(row, column);
+        this.boardManager.selectCrossSection(row, column);
     }
 
     public Command undoCommand() {
-        return new DeselectCrossSection(boardGraphic, row, column);
+        return new DeselectCrossSection(boardManager, row, column);
     }
 
     public int getColumn() {

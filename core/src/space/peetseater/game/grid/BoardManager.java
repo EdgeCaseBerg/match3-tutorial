@@ -21,13 +21,13 @@ import java.util.List;
 
 import static space.peetseater.game.Constants.*;
 
-public class BoardGraphic implements Disposable {
+public class BoardManager implements Disposable {
     public final Match3Assets match3Assets;
     private final Sound selectSFX;
     protected MovablePoint movablePoint;
     private final Texture texture;
     public final GameGrid<TileGraphic> gameGrid;
-    public BoardGraphic(final Vector2 position, GameGrid<TileType> sourceOfTruth, Match3Assets match3Assets) {
+    public BoardManager(final Vector2 position, GameGrid<TileType> sourceOfTruth, Match3Assets match3Assets) {
         this.movablePoint = new MovablePoint(position);
         this.match3Assets = match3Assets;
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
