@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -41,6 +42,8 @@ public class Match3Assets implements Disposable {
     public static final String SELECT_SFX_KEY = "sound/8-bit-16-bit-sound-effects-pack/Bubble 1.mp3";
     public static final String NEGATIVE_SFX_KEY = "sound/--Pixelated UI/Pixel_11.wav";
 
+    public static final String BGM_KEY = "sound/ogg-short-loopable-background-music/Lost in the Dessert.ogg";
+
     AssetManager assetManager;
     private final Sound emptySound = new EmptySound();
 
@@ -57,6 +60,7 @@ public class Match3Assets implements Disposable {
         queueTokenSheetTexture();
         queueSparkleSheetTexture();
         queueSounds();
+        queueBGM();
         assetManager.finishLoading();
         return assetManager.update();
     }
@@ -185,6 +189,18 @@ public class Match3Assets implements Disposable {
 
     public void unloadNegativeSFX() {
         assetManager.unload(NEGATIVE_SFX_KEY);
+    }
+
+    public void queueBGM() {
+        assetManager.load(BGM_KEY, Music.class);
+    }
+
+    public Music getBGM() {
+        return assetManager.get(BGM_KEY, Music.class);
+    }
+
+    public void unloadBGM() {
+        assetManager.unload(BGM_KEY);
     }
 
     @Override
