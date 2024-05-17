@@ -46,7 +46,7 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable {
         this.scoreUpSFX = match3Assets.getIncrementScoreSFX();
         this.negativeSFX = match3Assets.getNegativeSFX();
     }
-    void render(float delta, SpriteBatch spriteBatch, BitmapFont bitmapFont) {
+    public void render(float delta, SpriteBatch spriteBatch, BitmapFont bitmapFont) {
         float cornerX = movablePoint.getPosition().x;
         float cornerY = movablePoint.getPosition().y;
         spriteBatch.draw(
@@ -67,7 +67,7 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable {
         }
     }
 
-    void update(float delta) {
+    public void update(float delta) {
         ListIterator<TileGraphic> iter = inFlightMatches.listIterator();
         while (iter.hasNext()) {
             TileGraphic tileGraphic = iter.next();

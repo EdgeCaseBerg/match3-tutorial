@@ -10,9 +10,9 @@ import java.util.HashSet;
 public class DragInputAdapter extends InputAdapter {
 
     protected Viewport viewport;
-    protected Vector2 dragStart;
-    protected Vector2 dragEnd;
-    protected boolean isDragging;
+    public Vector2 dragStart;
+    public Vector2 dragEnd;
+    public boolean isDragging;
     protected boolean wasDragged;
 
     protected HashSet<DragEventSubscriber> subscribers;
