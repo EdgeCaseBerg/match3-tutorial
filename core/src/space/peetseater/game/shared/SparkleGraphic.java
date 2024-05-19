@@ -39,8 +39,16 @@ public class SparkleGraphic implements Disposable {
             this.stateTimes.add(MathUtils.random());
         }
         this.match3Assets = match3Assets;
-        this.sparkles = makeSparkles(match3Assets.getSparkleSheetTexture());
+        this.sparkles = null;
         this.enabled = false;
+    }
+
+    public Animation<TextureRegion> getSparkles() {
+        if (this.sparkles != null) {
+            return this.sparkles;
+        }
+        this.sparkles = makeSparkles(match3Assets.getSparkleSheetTexture());
+        return this.sparkles;
     }
 
     private Animation<TextureRegion> makeSparkles(Texture sparkleSheetTexture) {
@@ -64,7 +72,7 @@ public class SparkleGraphic implements Disposable {
             Float stateTime = stateTimes.get(i);
             stateTime += delta;
             stateTimes.set(i, stateTime);
-            TextureRegion keyframe = sparkles.getKeyFrame(stateTime, true);
+            TextureRegion keyframe = getSparkles().getKeyFrame(stateTime, true);
             batch.draw(keyframe, position.x, position.y, TILE_UNIT_WIDTH / 4, TILE_UNIT_HEIGHT / 4);
         }
     }

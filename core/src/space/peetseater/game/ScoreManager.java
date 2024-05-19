@@ -26,11 +26,8 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable {
     private final BoardManager boardManager;
     private final Texture texture;
 
-    private LinkedList<TileGraphic> inFlightMatches;
-    private Match3Assets match3Assets;
-    private Sound multiplierSFX;
-    private Sound scoreUpSFX;
-    private Sound negativeSFX;
+    private final LinkedList<TileGraphic> inFlightMatches;
+    private final Match3Assets match3Assets;
 
     public ScoreManager(Vector2 position, BoardManager boardManager, Match3Assets match3Assets) {
         this.scoringCalculator = new ScoringCalculator();
@@ -42,9 +39,6 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable {
         this.boardManager = boardManager;
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
         this.match3Assets = match3Assets;
-        this.multiplierSFX = match3Assets.getMultiplierSFX();
-        this.scoreUpSFX = match3Assets.getIncrementScoreSFX();
-        this.negativeSFX = match3Assets.getNegativeSFX();
     }
     public void render(float delta, SpriteBatch spriteBatch, BitmapFont bitmapFont) {
         float cornerX = movablePoint.getPosition().x;
@@ -74,14 +68,17 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable {
             if (tileGraphic.getMovablePoint().isAtDestination()) {
                 switch (tileGraphic.getTileType()) {
                     case Multiplier:
+                        Sound multiplierSFX = match3Assets.getMultiplierSFX();
                         multiplierSFX.stop();
                         multiplierSFX.play();
                         break;
                     case Negative:
+                        Sound negativeSFX = match3Assets.getNegativeSFX();
                         negativeSFX.stop();
                         negativeSFX.play();
                         break;
                     default:
+                        Sound scoreUpSFX = match3Assets.getIncrementScoreSFX();
                         scoreUpSFX.stop();
                         scoreUpSFX.play();
                 }

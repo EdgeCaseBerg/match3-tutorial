@@ -18,32 +18,49 @@ import static space.peetseater.game.Constants.TILE_UNIT_HEIGHT;
 import static space.peetseater.game.Constants.TILE_UNIT_WIDTH;
 import static space.peetseater.game.Match3Assets.*;
 
-public class TileGraphic implements Disposable {
+public class TileGraphic {
     private final TileType tileType;
-    private final TextureRegion idleTextureRegion;
-    private final TextureRegion selectedTextureRegion;
+    private TextureRegion idleTextureRegion = null;
+    private TextureRegion selectedTextureRegion = null;
     private final Match3Assets match3Assets;
-    TextureRegion texture;
+    TextureRegion texture = null;
     TileGraphicState state;
     LinearMovementBehavior positionState;
     MovablePoint movablePoint;
     SparkleGraphic sparkleGraphic;
     public TileGraphic(Vector2 position, TileType tileType, Match3Assets match3Assets) {
         this.tileType = tileType;
-        Texture sheet = match3Assets.getTokenSheetTexture();
         sparkleGraphic = new SparkleGraphic(position, match3Assets, TILE_UNIT_HEIGHT);
-        int y = match3Assets.getStartYOfTokenInSheet(tileType);
-        this.idleTextureRegion = new TextureRegion(sheet, TOKEN_SPRITE_IDLE_START, y, TOKEN_SPRITE_PIXEL_WIDTH, TOKEN_SPRITE_PIXEL_HEIGHT);
-        this.selectedTextureRegion = new TextureRegion(sheet, TOKEN_SPRITE_SELECTED_START, y, TOKEN_SPRITE_PIXEL_WIDTH, TOKEN_SPRITE_PIXEL_HEIGHT);
-        this.texture = idleTextureRegion;
         this.state = NotSelected.getInstance();
         this.movablePoint = new MovablePoint(position);
         this.positionState = new LinearMovementBehavior(this.movablePoint);
         this.match3Assets = match3Assets;
     }
 
+    public TextureRegion getIdleTextureRegion() {
+        Texture sheet = match3Assets.getTokenSheetTexture();
+        if (this.idleTextureRegion == null) {
+            int y = match3Assets.getStartYOfTokenInSheet(tileType);
+            this.idleTextureRegion = new TextureRegion(sheet, TOKEN_SPRITE_IDLE_START, y, TOKEN_SPRITE_PIXEL_WIDTH, TOKEN_SPRITE_PIXEL_HEIGHT);
+        }
+        return this.idleTextureRegion;
+    }
+
+    public TextureRegion getSelectedTextureRegion() {
+        Texture sheet = match3Assets.getTokenSheetTexture();
+        if (this.selectedTextureRegion == null) {
+            int y = match3Assets.getStartYOfTokenInSheet(tileType);
+            this.selectedTextureRegion = new TextureRegion(sheet, TOKEN_SPRITE_SELECTED_START, y, TOKEN_SPRITE_PIXEL_WIDTH, TOKEN_SPRITE_PIXEL_HEIGHT);
+        }
+        return this.selectedTextureRegion;
+    }
+
+
     public void render(float delta, SpriteBatch batch) {
         update(delta);
+        if (texture == null) {
+            useNotSelectedTexture();
+        }
         batch.draw(texture, movablePoint.getPosition().x, movablePoint.getPosition().y, TILE_UNIT_WIDTH, TILE_UNIT_HEIGHT);
         sparkleGraphic.render(delta, batch);
     }
@@ -65,17 +82,17 @@ public class TileGraphic implements Disposable {
     }
 
     public void useSelectedTexture() {
-        texture = selectedTextureRegion;
+        texture = getSelectedTextureRegion();
         sparkleGraphic.setEnabled(false);
     }
 
     public void useNotSelectedTexture() {
-        texture = idleTextureRegion;
+        texture = getIdleTextureRegion();
         sparkleGraphic.setEnabled(false);
     }
 
     public void useMatchedTexture() {
-        texture = selectedTextureRegion;
+        texture = getSelectedTextureRegion();
         sparkleGraphic.setEnabled(true);
     }
 
@@ -108,10 +125,5 @@ public class TileGraphic implements Disposable {
 
     public TileType getTileType() {
         return this.tileType;
-    }
-
-    @Override
-    public void dispose() {
-        match3Assets.unloadTokenSheetTexture();
     }
 }

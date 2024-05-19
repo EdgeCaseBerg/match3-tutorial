@@ -35,13 +35,11 @@ public class PlayScreen extends ScreenAdapter {
     private final DragInputAdapter dragInputAdapter;
     Match3GameState match3GameState;
     ScoreManager scoreManager;
-    private final Texture bgTexture;
 
     public PlayScreen(Match3Game match3Game) {
         this.match3Game = match3Game;
         Vector2 boardPosition = new Vector2(.1f,.1f);
         Vector2 scorePosition = boardPosition.cpy().add(Constants.BOARD_UNIT_WIDTH + 1f, Constants.BOARD_UNIT_HEIGHT - 3f);
-        this.bgTexture = match3Game.match3Assets.getGameScreenBackground();
 
         this.tokenGrid = new GameGrid<>(Constants.TOKENS_PER_ROW,Constants.TOKENS_PER_COLUMN);
         tokenAlgorithm = new NextTileAlgorithms.WillNotMatch(tokenGrid);
@@ -85,7 +83,7 @@ public class PlayScreen extends ScreenAdapter {
 
         ScreenUtils.clear(Color.BLACK);
         match3Game.batch.begin();
-        match3Game.batch.draw(bgTexture, 0, 0, GAME_WIDTH, GAME_HEIGHT);
+        match3Game.batch.draw(match3Game.match3Assets.getGameScreenBackground(), 0, 0, GAME_WIDTH, GAME_HEIGHT);
         boardManager.render(delta, match3Game.batch);
         scoreManager.render(delta, match3Game.batch, match3Game.font);
 

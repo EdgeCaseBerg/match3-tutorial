@@ -54,14 +54,13 @@ public class Match3Assets implements Disposable {
         assetManager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
     }
 
-    public boolean loadEssentialAssets() {
-        queueFont(0.5f, SCORE_FONT_KEY);
+    public boolean queueAssets() {
+        queueFont();
         queueBackgroundTexture();
         queueTokenSheetTexture();
         queueSparkleSheetTexture();
         queueSounds();
         queueBGM();
-        assetManager.finishLoading();
         return assetManager.update();
     }
 
@@ -78,6 +77,10 @@ public class Match3Assets implements Disposable {
                 param
         );
         assetManager.load(bitmapFontAssetDescriptor);
+    }
+
+    public void queueFont() {
+        queueFont(0.5f, SCORE_FONT_KEY);
     }
 
     public BitmapFont getFont() {
@@ -207,4 +210,13 @@ public class Match3Assets implements Disposable {
     public void dispose() {
         assetManager.dispose();
     }
+
+    public void blockingLoad() {
+        assetManager.finishLoading();
+    }
+
+    public int getProgress() {
+        float zeroToOne = assetManager.getProgress();
+        return (int) (zeroToOne * 100);
+    };
 }
