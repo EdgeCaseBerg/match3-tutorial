@@ -23,7 +23,6 @@ import static space.peetseater.game.Constants.*;
 
 public class BoardManager implements Disposable {
     public final Match3Assets match3Assets;
-    private final Sound selectSFX;
     protected MovablePoint movablePoint;
     private final Texture texture;
     public final GameGrid<TileGraphic> gameGrid;
@@ -31,7 +30,6 @@ public class BoardManager implements Disposable {
         this.movablePoint = new MovablePoint(position);
         this.match3Assets = match3Assets;
         this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
-        this.selectSFX = match3Assets.getSelectSFX();
         this.gameGrid = new GameGrid<>(sourceOfTruth.getWidth(), sourceOfTruth.getHeight());
         initializeGrid(sourceOfTruth);
     }
@@ -50,6 +48,7 @@ public class BoardManager implements Disposable {
     }
 
     public void playSelectSFX() {
+        Sound selectSFX = match3Assets.getSelectSFX();
         selectSFX.stop();
         selectSFX.play();
     }
