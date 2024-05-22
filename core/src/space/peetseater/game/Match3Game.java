@@ -1,8 +1,6 @@
 package space.peetseater.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -42,11 +40,6 @@ public class Match3Game extends Game {
 			if (screen != loadingScreen) {
 				setScreen(loadingScreen);
 			}
-		}
-		if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
-			match3Assets.assetManager.clear();
-			loadAssets();
-			match3Assets.queueAssets();
 		}
 
 		if (loadingScreen.isLoadingComplete()) {
