@@ -3,9 +3,9 @@ package space.peetseater.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -19,10 +19,13 @@ import space.peetseater.game.tile.NextTileAlgorithms;
 import space.peetseater.game.tile.TileType;
 import space.peetseater.game.token.TokenGeneratorAlgorithm;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static space.peetseater.game.Constants.GAME_HEIGHT;
 import static space.peetseater.game.Constants.GAME_WIDTH;
 
-public class PlayScreen extends ScreenAdapter {
+public class PlayScreen extends ScreenAdapter implements Scene {
     private Match3Game match3Game;
     private final BoardManager boardManager;
     GameGrid<TileType> tokenGrid;
@@ -35,6 +38,7 @@ public class PlayScreen extends ScreenAdapter {
     private final DragInputAdapter dragInputAdapter;
     Match3GameState match3GameState;
     ScoreManager scoreManager;
+    private List<AssetDescriptor<?>> assets;
 
     public PlayScreen(Match3Game match3Game) {
         this.match3Game = match3Game;
@@ -57,6 +61,17 @@ public class PlayScreen extends ScreenAdapter {
         this.dragInputAdapter = new DragInputAdapter(viewport);
         this.dragInputAdapter.addSubscriber(match3GameState);
         Gdx.input.setInputProcessor(dragInputAdapter);
+
+        assets = new LinkedList<>();
+        assets.add(Match3Assets.background);
+        assets.add(Match3Assets.multiplierSFX);
+        assets.add(Match3Assets.scoreSFX);
+        assets.add(Match3Assets.selectSFX);
+        assets.add(Match3Assets.negativeSFX);
+        assets.add(Match3Assets.sparkle);
+        assets.add(Match3Assets.tokens);
+        assets.add(Match3Assets.scoreFont);
+        assets.add(Match3Assets.bgm);
     }
 
     @Override
@@ -122,7 +137,15 @@ public class PlayScreen extends ScreenAdapter {
 
     @Override
     public void dispose () {
+        for (AssetDescriptor<?> asset : assets) {
+            match3Game.match3Assets.unload(asset);
+        }
         scoreManager.dispose();
         boardManager.dispose();
+    }
+
+    @Override
+    public List<AssetDescriptor<?>> getRequiredAssets() {
+        return assets;
     }
 }

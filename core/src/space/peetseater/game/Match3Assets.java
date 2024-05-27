@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.utils.Disposable;
-import space.peetseater.game.shared.EmptySound;
+import space.peetseater.game.screens.Scene;
 import space.peetseater.game.tile.TileType;
 
 import static space.peetseater.game.Constants.*;
@@ -21,10 +21,13 @@ import static space.peetseater.game.Constants.*;
 public class Match3Assets implements Disposable {
 
     public static final String BACKGROUND_TEXTURE_KEY = "textures/stringstar-fields-example-bg.png";
+    public static final AssetDescriptor<Texture> background = new AssetDescriptor<>(BACKGROUND_TEXTURE_KEY, Texture.class);
 
     public static String SCORE_FONT_KEY = "scorefont.ttf";
+    public static final AssetDescriptor<BitmapFont> scoreFont = fontDescriptorForSize(0.5f, SCORE_FONT_KEY);
 
     public static final String TOKEN_SPRITE_SHEET_KEY = "textures/tokens/tokens.png";
+    public static final AssetDescriptor<Texture> tokens = new AssetDescriptor<>(TOKEN_SPRITE_SHEET_KEY, Texture.class);
 
     public static final int TOKEN_SPRITE_PIXEL_WIDTH = 32;
     public static final int TOKEN_SPRITE_PIXEL_HEIGHT = 32;
@@ -32,23 +35,32 @@ public class Match3Assets implements Disposable {
     public static final int TOKEN_SPRITE_SELECTED_START = 32;
 
     public static final String SPARKLE_SHEET_KEY = "textures/sparkle.png";
+    public static final AssetDescriptor<Texture> sparkle = new AssetDescriptor<>(SPARKLE_SHEET_KEY, Texture.class);
 
     public static final int SPARKLE_SPRITE_WIDTH = 9;
     public static final int SPARKLE_SPRITE_HEIGHT = 9;
 
 
     public static final String SCORE_SFX_KEY = "sound/8-bit-16-bit-sound-effects-pack/Big Egg collect 1.mp3";
+    public static final AssetDescriptor<Sound> scoreSFX = new AssetDescriptor<>(SCORE_SFX_KEY, Sound.class);
+
     public static final String MULTIPLIER_SFX_KEY = "sound/--Pixelated UI/Pixel_08.wav";
+    public static final AssetDescriptor<Sound> multiplierSFX = new AssetDescriptor<>(MULTIPLIER_SFX_KEY, Sound.class);
+
     public static final String SELECT_SFX_KEY = "sound/8-bit-16-bit-sound-effects-pack/Bubble 1.mp3";
+    public static final AssetDescriptor<Sound> selectSFX = new AssetDescriptor<>(SELECT_SFX_KEY, Sound.class);
+
     public static final String NEGATIVE_SFX_KEY = "sound/--Pixelated UI/Pixel_11.wav";
+    public static final AssetDescriptor<Sound> negativeSFX = new AssetDescriptor<>(NEGATIVE_SFX_KEY, Sound.class);
 
     public static final String BGM_KEY = "sound/ogg-short-loopable-background-music/Lost in the Dessert.ogg";
+    public static final AssetDescriptor<Music> bgm = new AssetDescriptor<>(BGM_KEY, Music.class);
 
-    AssetManager assetManager;
-    private final Sound emptySound = new EmptySound();
+    public AssetManager assetManager;
 
     public Match3Assets() {
         assetManager = new AssetManager();
+        Texture.setAssetManager(assetManager);
         FileHandleResolver resolver = assetManager.getFileHandleResolver();
         assetManager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         assetManager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
@@ -64,7 +76,7 @@ public class Match3Assets implements Disposable {
         return assetManager.update();
     }
 
-    public void queueFont(float ratioToOneTile, String key) {
+    static public AssetDescriptor<BitmapFont> fontDescriptorForSize(float ratioToOneTile, String key) {
         FreetypeFontLoader.FreeTypeFontLoaderParameter param = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         param.fontFileName ="font/PoeRedcoatNew-Y5Ro.ttf";
         param.fontParameters.size = (int)((TILE_UNIT_HEIGHT / GAME_HEIGHT) * Gdx.graphics.getHeight() * ratioToOneTile);
@@ -76,6 +88,11 @@ public class Match3Assets implements Disposable {
                 BitmapFont.class,
                 param
         );
+        return bitmapFontAssetDescriptor;
+    }
+
+    public void queueFont(float ratioToOneTile, String key) {
+        AssetDescriptor<BitmapFont> bitmapFontAssetDescriptor = fontDescriptorForSize(ratioToOneTile, key);
         assetManager.load(bitmapFontAssetDescriptor);
     }
 
@@ -84,8 +101,8 @@ public class Match3Assets implements Disposable {
     }
 
     public BitmapFont getFont() {
-        if (assetManager.isLoaded(SCORE_FONT_KEY)) {
-            BitmapFont font = assetManager.get(SCORE_FONT_KEY);
+        if (assetManager.isLoaded(scoreFont)) {
+            BitmapFont font = assetManager.get(scoreFont);
             font.setUseIntegerPositions(false);
             font.getData().setScale(
                     (float) GAME_WIDTH / Gdx.graphics.getWidth(),
@@ -98,26 +115,23 @@ public class Match3Assets implements Disposable {
     }
 
     public void queueBackgroundTexture() {
-        assetManager.load(BACKGROUND_TEXTURE_KEY, Texture.class);
+        assetManager.load(background);
     }
 
     public Texture getGameScreenBackground() {
-        if (assetManager.isLoaded(BACKGROUND_TEXTURE_KEY)) {
-            return assetManager.get(BACKGROUND_TEXTURE_KEY, Texture.class);
-        }
-        return TestTexture.makeTexture(Color.BLACK);
+        return assetManager.get(background);
     }
 
     public void queueTokenSheetTexture() {
-        assetManager.load(TOKEN_SPRITE_SHEET_KEY, Texture.class);
+        assetManager.load(tokens);
     }
 
     public Texture getTokenSheetTexture() {
-        return assetManager.get(TOKEN_SPRITE_SHEET_KEY, Texture.class);
+        return assetManager.get(tokens);
     }
 
     public void unloadTokenSheetTexture() {
-        assetManager.unload(TOKEN_SPRITE_SHEET_KEY);
+        assetManager.unload(tokens.fileName);
     }
 
     public int getStartYOfTokenInSheet(TileType tileType) {
@@ -155,55 +169,48 @@ public class Match3Assets implements Disposable {
         assetManager.load(NEGATIVE_SFX_KEY, Sound.class);
     }
 
-    private Sound getSFXOrEmpty(String key) {
-        if (assetManager.isLoaded(key)) {
-            return assetManager.get(key, Sound.class);
-        }
-        return emptySound;
-    }
-
     public Sound getMultiplierSFX() {
-        return getSFXOrEmpty(MULTIPLIER_SFX_KEY);
+        return assetManager.get(multiplierSFX);
     }
 
     public void unloadMultiplierSFX() {
-        assetManager.unload(MULTIPLIER_SFX_KEY);
+        assetManager.unload(multiplierSFX.fileName);
     }
 
     public Sound getIncrementScoreSFX() {
-        return getSFXOrEmpty(SCORE_SFX_KEY);
+        return assetManager.get(scoreSFX);
     }
 
     public void unloadIncrementScoreSFX() {
-        assetManager.unload(SCORE_SFX_KEY);
+        assetManager.unload(scoreSFX.fileName);
     }
 
     public Sound getSelectSFX() {
-        return getSFXOrEmpty(SELECT_SFX_KEY);
+        return assetManager.get(selectSFX);
     }
 
     public void unloadSelectSFX() {
-        assetManager.unload(SELECT_SFX_KEY);
+        assetManager.unload(selectSFX.fileName);
     }
 
     public Sound getNegativeSFX() {
-        return getSFXOrEmpty(NEGATIVE_SFX_KEY);
+        return assetManager.get(negativeSFX);
     }
 
     public void unloadNegativeSFX() {
-        assetManager.unload(NEGATIVE_SFX_KEY);
+        assetManager.unload(negativeSFX.fileName);
     }
 
     public void queueBGM() {
-        assetManager.load(BGM_KEY, Music.class);
+        assetManager.load(bgm);
     }
 
     public Music getBGM() {
-        return assetManager.get(BGM_KEY, Music.class);
+        return assetManager.get(bgm);
     }
 
     public void unloadBGM() {
-        assetManager.unload(BGM_KEY);
+        assetManager.unload(bgm.fileName);
     }
 
     @Override
@@ -219,4 +226,18 @@ public class Match3Assets implements Disposable {
         float zeroToOne = assetManager.getProgress();
         return (int) (zeroToOne * 100);
     };
+
+    public void queue(Scene scene) {
+        for (AssetDescriptor<?> asset : scene.getRequiredAssets()) {
+            assetManager.load(asset);
+        }
+    }
+
+    public void unloadFont() {
+        assetManager.unload(scoreFont.fileName);
+    }
+
+    public void unload(AssetDescriptor<?> asset) {
+        assetManager.unload(asset.fileName);
+    }
 }

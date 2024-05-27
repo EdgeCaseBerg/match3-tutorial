@@ -179,7 +179,6 @@ public class BoardManager implements Disposable {
 
     @Override
     public void dispose() {
-        match3Assets.unloadSelectSFX();
         texture.dispose();
     }
 }

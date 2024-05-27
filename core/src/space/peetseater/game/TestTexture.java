@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class TestTexture {
     public static Texture makeTexture(Color color) {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        Pixmap pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
         pixmap.setColor(color);
         pixmap.fill();
         Texture texture = new Texture(pixmap);
