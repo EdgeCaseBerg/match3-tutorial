@@ -44,8 +44,8 @@ class FadeInFromBlack implements TransitionStep {
         // Render the screen we're going to go to underneath our transition piece.
         transition.to.render(delta);
         transition.match3Game.batch.begin();
-        float lerped = MathUtils.lerp(0, 1, accum / minLength);
-        Color batchColor = transition.match3Game.batch.getColor();
+        float lerped = MathUtils.lerp(0, 1,  accum / minLength);
+        Color batchColor = transition.match3Game.batch.getColor().cpy();
         transition.match3Game.batch.setColor(
                 batchColor.r,
                 batchColor.g,

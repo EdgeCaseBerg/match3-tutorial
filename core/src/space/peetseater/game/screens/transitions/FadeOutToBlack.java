@@ -48,7 +48,7 @@ class FadeOutToBlack implements TransitionStep {
             transition.match3Game.batch.draw(
                     fromTexture, 0f, 0f, GAME_WIDTH, GAME_HEIGHT, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false, true
             );
-            Color batchColor = transition.match3Game.batch.getColor();
+            Color batchColor = transition.match3Game.batch.getColor().cpy();
             transition.match3Game.batch.setColor(
                     batchColor.r,
                     batchColor.g,
