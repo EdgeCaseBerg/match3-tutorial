@@ -26,6 +26,12 @@ public class Match3Assets implements Disposable {
     public static String SCORE_FONT_KEY = "scorefont.ttf";
     public static final AssetDescriptor<BitmapFont> scoreFont = fontDescriptorForSize(0.5f, SCORE_FONT_KEY);
 
+    public static String TITLE_FONT_KEY = "titlefont.ttf";
+    public static final AssetDescriptor<BitmapFont> titleFont = fontDescriptorForSize(1.5f, TITLE_FONT_KEY);
+
+    public static String BUTTON_NINE_PATCH_KEY = "textures/button9patch.png";
+    public static final AssetDescriptor<Texture> button9Patch = new AssetDescriptor<>(BUTTON_NINE_PATCH_KEY, Texture.class);
+
     public static final String TOKEN_SPRITE_SHEET_KEY = "textures/tokens/tokens.png";
     public static final AssetDescriptor<Texture> tokens = new AssetDescriptor<>(TOKEN_SPRITE_SHEET_KEY, Texture.class);
 
@@ -239,5 +245,19 @@ public class Match3Assets implements Disposable {
 
     public void unload(AssetDescriptor<?> asset) {
         assetManager.unload(asset.fileName);
+    }
+
+    public Texture getButton9PatchTexture() {
+        return assetManager.get(button9Patch);
+    }
+
+    public BitmapFont getTitleFont() {
+        BitmapFont font = assetManager.get(titleFont);
+        font.setUseIntegerPositions(false);
+        font.getData().setScale(
+                (float) GAME_WIDTH / Gdx.graphics.getWidth(),
+                (float) GAME_HEIGHT / Gdx.graphics.getHeight()
+        );
+        return font;
     }
 }

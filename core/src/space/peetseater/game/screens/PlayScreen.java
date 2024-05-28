@@ -78,7 +78,7 @@ public class PlayScreen extends ScreenAdapter implements Scene {
     public void render(float delta) {
         super.render(delta);
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit();
+            match3Game.replaceSceneWith(new TitleScreen(match3Game));
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {

@@ -106,9 +106,6 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable {
 
     @Override
     public void dispose() {
-        match3Assets.unloadMultiplierSFX();
-        match3Assets.unloadIncrementScoreSFX();
-        match3Assets.unloadNegativeSFX();
         this.texture.dispose();
     }
 }

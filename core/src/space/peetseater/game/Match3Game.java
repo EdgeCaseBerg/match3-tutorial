@@ -29,7 +29,7 @@ public class Match3Game extends Game {
 		this.bgm.setVolume(0.6f);
 		this.bgm.setLooping(true);
 		this.bgm.play();
-		transition = new Transition(this, TransitionType.Push, null, new LoadingScreen(this));
+		transition = new Transition(this, TransitionType.Push, null, new TitleScreen(this));
 	}
 
 	@Override
