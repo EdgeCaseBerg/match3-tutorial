@@ -60,7 +60,6 @@ public class PlayScreen extends ScreenAdapter implements Scene {
         this.match3GameState.addSubscriber(scoreManager);
         this.dragInputAdapter = new DragInputAdapter(viewport);
         this.dragInputAdapter.addSubscriber(match3GameState);
-        Gdx.input.setInputProcessor(dragInputAdapter);
 
         assets = new LinkedList<>();
         assets.add(Match3Assets.background);
@@ -147,5 +146,16 @@ public class PlayScreen extends ScreenAdapter implements Scene {
     @Override
     public List<AssetDescriptor<?>> getRequiredAssets() {
         return assets;
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        Gdx.input.setInputProcessor(dragInputAdapter);
+    }
+
+    @Override
+    public void hide() {
+        Gdx.input.setInputProcessor(null);
     }
 }

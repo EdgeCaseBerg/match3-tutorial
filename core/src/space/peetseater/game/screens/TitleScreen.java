@@ -13,8 +13,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import space.peetseater.game.Match3Assets;
 import space.peetseater.game.Match3Game;
 import space.peetseater.game.screens.menu.ButtonListener;
+import space.peetseater.game.screens.menu.MenuButton;
 import space.peetseater.game.screens.menu.MenuInputAdapter;
-import space.peetseater.game.screens.menu.Button;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,9 +29,10 @@ public class TitleScreen extends ScreenAdapter implements Scene, ButtonListener 
     public static final String QUIT = "Quit";
     private final Match3Game match3Game;
     private final List<AssetDescriptor<?>> assets;
-    private final LinkedList<Button> buttons;
+    private final LinkedList<MenuButton> menuButtons;
     private OrthographicCamera camera;
     private FitViewport viewport;
+    private MenuInputAdapter menuInputAdapter;
 
     public TitleScreen(Match3Game match3Game) {
         this.match3Game = match3Game;
@@ -46,20 +47,20 @@ public class TitleScreen extends ScreenAdapter implements Scene, ButtonListener 
         assets.add(Match3Assets.button9Patch);
         assets.add(Match3Assets.titleFont);
 
-        buttons = new LinkedList<>();
+        menuButtons = new LinkedList<>();
         Vector2 buttonPositionsStart = new Vector2(GAME_WIDTH / 2f - 2.5f, GAME_HEIGHT / 2f - 1);
         Vector2 buttonMinSize = new Vector2(5f, match3Game.font.getLineHeight() + 0.2f);
 
-        MenuInputAdapter menuInputAdapter = new MenuInputAdapter(viewport);
+        menuInputAdapter = new MenuInputAdapter(viewport);
         Gdx.input.setInputProcessor(menuInputAdapter);
 
         String[] buttonTexts = new String[]{START_GAME, SETTINGS, CREDITS, QUIT};
         for (int i = 0; i < buttonTexts.length; i++) {
             Vector2 buttonPosition = buttonPositionsStart.cpy().sub(0, i  * buttonMinSize.y);
-            Button button = new Button(buttonTexts[i], buttonPosition, buttonMinSize, match3Game.match3Assets);
-            button.addButtonListener(this);
-            buttons.add(button);
-            menuInputAdapter.addSubscriber(button);
+            MenuButton menuButton = new MenuButton(buttonTexts[i], buttonPosition, buttonMinSize, match3Game.match3Assets);
+            menuButton.addButtonListener(this);
+            menuButtons.add(menuButton);
+            menuInputAdapter.addSubscriber(menuButton);
         }
     }
 
@@ -82,8 +83,8 @@ public class TitleScreen extends ScreenAdapter implements Scene, ButtonListener 
                 GAME_WIDTH, Align.center, false
         );
 
-        for (Button button : buttons) {
-            button.render(delta, match3Game.batch, match3Game.font);
+        for (MenuButton menuButton : menuButtons) {
+            menuButton.render(delta, match3Game.batch, match3Game.font);
         }
         match3Game.batch.end();
     }
@@ -100,8 +101,8 @@ public class TitleScreen extends ScreenAdapter implements Scene, ButtonListener 
     }
 
     @Override
-    public void buttonClicked(Button button) {
-        for (Button menuButton : buttons) {
+    public void buttonClicked(MenuButton button) {
+        for (MenuButton menuButton : menuButtons) {
             if (button == menuButton) {
                 switch (button.getText()) {
                     case START_GAME:
@@ -120,5 +121,17 @@ public class TitleScreen extends ScreenAdapter implements Scene, ButtonListener 
                 }
             }
         }
+    }
+
+    @Override
+    public void hide() {
+        super.hide();
+        Gdx.input.setInputProcessor(null);
+    }
+
+    @Override
+    public void show() {
+        super.show();
+        Gdx.input.setInputProcessor(menuInputAdapter);
     }
 }

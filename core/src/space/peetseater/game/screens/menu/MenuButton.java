@@ -16,16 +16,10 @@ import java.util.HashSet;
 import static space.peetseater.game.Constants.GAME_HEIGHT;
 import static space.peetseater.game.Constants.GAME_WIDTH;
 
-public class Button implements MenuEventSubscriber {
+public class MenuButton implements MenuEventSubscriber {
     protected float xActiveOffset;
     protected float yActiveOffset;
     protected HashSet<ButtonListener> listeners;
-
-    static enum ButtonState {
-        IDLE,
-        HOVER,
-        ACTIVE
-    }
 
     private final String text;
     private ButtonState buttonState;
@@ -35,8 +29,9 @@ public class Button implements MenuEventSubscriber {
     protected NinePatch inactive;
     protected NinePatch hovering;
     protected NinePatch active;
+    protected boolean depressed;
 
-    public Button(String text, Vector2 position, Vector2 minimumSize, Match3Assets match3Assets) {
+    public MenuButton(String text, Vector2 position, Vector2 minimumSize, Match3Assets match3Assets) {
         this.text = text;
         this.buttonState = ButtonState.IDLE;
         this.position = position;
@@ -46,6 +41,7 @@ public class Button implements MenuEventSubscriber {
         this.xActiveOffset = 0;
         this.yActiveOffset = -0.1f;
         this.listeners = new HashSet<>();
+        this.depressed = false;
     }
 
     public void setHorizontalActiveOffset(float xOffsetWhenPressed) {
