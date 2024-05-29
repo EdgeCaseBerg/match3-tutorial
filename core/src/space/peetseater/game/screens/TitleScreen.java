@@ -46,6 +46,8 @@ public class TitleScreen extends ScreenAdapter implements Scene, ButtonListener 
         assets.add(Match3Assets.background);
         assets.add(Match3Assets.button9Patch);
         assets.add(Match3Assets.titleFont);
+        assets.add(Match3Assets.confirmSFX);
+        assets.add(Match3Assets.cancelSFX);
 
         menuButtons = new LinkedList<>();
         Vector2 buttonPositionsStart = new Vector2(GAME_WIDTH / 2f - 2.5f, GAME_HEIGHT / 2f - 1);

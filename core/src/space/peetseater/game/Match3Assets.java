@@ -46,7 +46,6 @@ public class Match3Assets implements Disposable {
     public static final int SPARKLE_SPRITE_WIDTH = 9;
     public static final int SPARKLE_SPRITE_HEIGHT = 9;
 
-
     public static final String SCORE_SFX_KEY = "sound/8-bit-16-bit-sound-effects-pack/Big Egg collect 1.mp3";
     public static final AssetDescriptor<Sound> scoreSFX = new AssetDescriptor<>(SCORE_SFX_KEY, Sound.class);
 
@@ -58,6 +57,12 @@ public class Match3Assets implements Disposable {
 
     public static final String NEGATIVE_SFX_KEY = "sound/--Pixelated UI/Pixel_11.wav";
     public static final AssetDescriptor<Sound> negativeSFX = new AssetDescriptor<>(NEGATIVE_SFX_KEY, Sound.class);
+
+    public static final String CONFIRM_SFX_KEY = "sound/8-bit-16-bit-sound-effects-pack/Confirm 1.mp3";
+    public static final AssetDescriptor<Sound> confirmSFX = new AssetDescriptor<>(CONFIRM_SFX_KEY, Sound.class);
+
+    public static final String CANCEL_SFX_KEY = "sound/8-bit-16-bit-sound-effects-pack/Cancel 1.mp3";
+    public static final AssetDescriptor<Sound> cancelSFX = new AssetDescriptor<>(CANCEL_SFX_KEY, Sound.class);
 
     public static final String BGM_KEY = "sound/ogg-short-loopable-background-music/Lost in the Dessert.ogg";
     public static final AssetDescriptor<Music> bgm = new AssetDescriptor<>(BGM_KEY, Music.class);
@@ -259,5 +264,13 @@ public class Match3Assets implements Disposable {
                 (float) GAME_HEIGHT / Gdx.graphics.getHeight()
         );
         return font;
+    }
+
+    public Sound getConfirmSFX() {
+        return assetManager.get(confirmSFX);
+    }
+
+    public Sound getCancelSFX() {
+        return assetManager.get(cancelSFX);
     }
 }

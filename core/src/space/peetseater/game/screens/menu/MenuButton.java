@@ -107,6 +107,7 @@ public class MenuButton implements MenuEventSubscriber {
     public boolean onMouseMove(Vector2 point) {
         if (contains(point)) {
             if (buttonState == ButtonState.IDLE) {
+                match3Assets.getConfirmSFX().play();
                 buttonState = ButtonState.HOVER;
                 return true;
             }
@@ -123,8 +124,9 @@ public class MenuButton implements MenuEventSubscriber {
                 break;
             case HOVER:
                 buttonState = ButtonState.ACTIVE;
-                for (ButtonListener listener : listeners) {
-                    listener.buttonClicked(this);
+                if (!depressed) {
+                    depressed = true;
+
                 }
                 return true;
         }
@@ -137,6 +139,11 @@ public class MenuButton implements MenuEventSubscriber {
             case HOVER:
                 break;
             case ACTIVE:
+                depressed = false;
+                match3Assets.getCancelSFX().play();
+                for (ButtonListener listener : listeners) {
+                    listener.buttonClicked(this);
+                }
                 buttonState = ButtonState.HOVER;
                 return true;
         }
