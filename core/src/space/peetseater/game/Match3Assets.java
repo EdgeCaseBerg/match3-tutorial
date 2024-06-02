@@ -217,7 +217,9 @@ public class Match3Assets implements Disposable {
     }
 
     public Music getBGM() {
-        return assetManager.get(bgm);
+        Music m =assetManager.get(bgm);
+        m.setVolume(GameSettings.getInstance().getBgmVolume());
+        return m;
     }
 
     public void unloadBGM() {

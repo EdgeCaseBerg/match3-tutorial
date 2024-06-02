@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
+import space.peetseater.game.GameSettings;
 import space.peetseater.game.Match3Assets;
 
 import java.util.HashSet;
@@ -21,11 +22,11 @@ public class MenuButton implements MenuEventSubscriber {
     protected float yActiveOffset;
     protected HashSet<ButtonListener> listeners;
 
-    private final String text;
-    private ButtonState buttonState;
-    private final Vector2 minSize;
-    private final Vector2 position;
-    private final Match3Assets match3Assets;
+    protected final String text;
+    protected ButtonState buttonState;
+    protected final Vector2 minSize;
+    protected final Vector2 position;
+    protected final Match3Assets match3Assets;
     protected NinePatch inactive;
     protected NinePatch hovering;
     protected NinePatch active;
@@ -95,7 +96,7 @@ public class MenuButton implements MenuEventSubscriber {
         // Textures are draw from the bottom left corner, but font is from the top left corner
         // So we have to compute where the font's y value is by flipping and shifting
         float fontYPosition = position.y + minSize.y - inactive.getPadTop() - inactive.getPadBottom() + yOffset;
-        font.draw(batch, text, position.x + inactive.getPadLeft() + xOffset, fontYPosition,  minSize.x, Align.center, false);
+        font.draw(batch, getText(), position.x + inactive.getPadLeft() + xOffset, fontYPosition,  minSize.x, Align.center, false);
     }
 
     public boolean contains(Vector2 point) {
@@ -107,7 +108,7 @@ public class MenuButton implements MenuEventSubscriber {
     public boolean onMouseMove(Vector2 point) {
         if (contains(point)) {
             if (buttonState == ButtonState.IDLE) {
-                match3Assets.getConfirmSFX().play();
+                match3Assets.getConfirmSFX().play(GameSettings.getInstance().getSfxVolume());
                 buttonState = ButtonState.HOVER;
                 return true;
             }
@@ -124,9 +125,8 @@ public class MenuButton implements MenuEventSubscriber {
                 break;
             case HOVER:
                 buttonState = ButtonState.ACTIVE;
-                if (!depressed) {
-                    depressed = true;
-
+                if (!isDepressed()) {
+                    setDepressed(true);
                 }
                 return true;
         }
@@ -139,8 +139,8 @@ public class MenuButton implements MenuEventSubscriber {
             case HOVER:
                 break;
             case ACTIVE:
-                depressed = false;
-                match3Assets.getCancelSFX().play();
+                setDepressed(false);
+                match3Assets.getCancelSFX().play(GameSettings.getInstance().getSfxVolume());
                 for (ButtonListener listener : listeners) {
                     listener.buttonClicked(this);
                 }
@@ -156,5 +156,13 @@ public class MenuButton implements MenuEventSubscriber {
 
     public String getText() {
         return text;
+    }
+
+    public boolean isDepressed() {
+        return depressed;
+    }
+
+    public void setDepressed(boolean depressed) {
+        this.depressed = depressed;
     }
 }

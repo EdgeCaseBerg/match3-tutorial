@@ -18,7 +18,6 @@ public class Match3Game extends Game {
 	public Match3Assets match3Assets;
 	public Stack<Scene> scenes;
 	Transition transition;
-
 	@Override
 	public void create () {
 		scenes = new Stack<>();
@@ -26,7 +25,7 @@ public class Match3Game extends Game {
 		match3Assets = new Match3Assets();
 		loadAssets();
 		// Play one tune the whole game for now
-		this.bgm.setVolume(0.6f);
+		this.bgm.setVolume(GameSettings.getInstance().getBgmVolume());
 		this.bgm.setLooping(true);
 		this.bgm.play();
 		transition = new Transition(this, TransitionType.Push, null, new TitleScreen(this));

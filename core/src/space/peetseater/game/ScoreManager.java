@@ -70,17 +70,17 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable {
                     case Multiplier:
                         Sound multiplierSFX = match3Assets.getMultiplierSFX();
                         multiplierSFX.stop();
-                        multiplierSFX.play();
+                        multiplierSFX.play(GameSettings.getInstance().getSfxVolume());
                         break;
                     case Negative:
                         Sound negativeSFX = match3Assets.getNegativeSFX();
                         negativeSFX.stop();
-                        negativeSFX.play();
+                        negativeSFX.play(GameSettings.getInstance().getSfxVolume());
                         break;
                     default:
                         Sound scoreUpSFX = match3Assets.getIncrementScoreSFX();
                         scoreUpSFX.stop();
-                        scoreUpSFX.play();
+                        scoreUpSFX.play(GameSettings.getInstance().getSfxVolume());
                 }
                 iter.remove();
             }

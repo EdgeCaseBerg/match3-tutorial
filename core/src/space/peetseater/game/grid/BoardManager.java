@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import space.peetseater.game.Constants;
+import space.peetseater.game.GameSettings;
 import space.peetseater.game.Match3Assets;
 import space.peetseater.game.TestTexture;
 import space.peetseater.game.shared.MovablePoint;
@@ -50,7 +51,7 @@ public class BoardManager implements Disposable {
     public void playSelectSFX() {
         Sound selectSFX = match3Assets.getSelectSFX();
         selectSFX.stop();
-        selectSFX.play();
+        selectSFX.play(GameSettings.getInstance().getSfxVolume());
     }
 
     public float screenYFromGridRow(int row) {
