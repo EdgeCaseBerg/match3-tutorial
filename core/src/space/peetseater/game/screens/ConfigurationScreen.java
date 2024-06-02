@@ -48,6 +48,7 @@ public class ConfigurationScreen extends ScreenAdapter implements Scene, ButtonL
         assets.add(Match3Assets.cancelSFX);
         assets.add(Match3Assets.titleFont);
         assets.add(Match3Assets.tokens);
+        assets.add(Match3Assets.background);
 
         menuInputAdapter = new MenuInputAdapter(viewport);
 
@@ -98,7 +99,10 @@ public class ConfigurationScreen extends ScreenAdapter implements Scene, ButtonL
         match3Game.batch.setProjectionMatrix(camera.combined);
         ScreenUtils.clear(Color.BLACK);
         match3Game.batch.begin();
-        match3Game.batch.draw(match3Game.match3Assets.getGameScreenBackground(), 0, 0);
+        Color pre = match3Game.batch.getColor().cpy();
+        match3Game.batch.setColor(pre.cpy().set(pre.r, pre.g, pre.b, 0.4f));
+        match3Game.batch.draw(match3Game.match3Assets.getGameScreenBackground(), 0, 0, GAME_WIDTH, GAME_HEIGHT);
+        match3Game.batch.setColor(pre);
         match3Game.match3Assets.getTitleFont().draw(
                 match3Game.batch,
                 "Configuration",
