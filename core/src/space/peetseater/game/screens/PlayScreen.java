@@ -50,6 +50,9 @@ public class PlayScreen extends ScreenAdapter implements Scene {
         for (GridSpace<TileType> gridSpace : tokenGrid) {
             gridSpace.setValue(tokenAlgorithm.next(gridSpace.getRow(), gridSpace.getColumn()));
         }
+        if (GameSettings.getInstance().getDifficult().equals(GameDifficulty.EASY)) {
+            this.tokenAlgorithm = new NextTileAlgorithms.LikelyToMatch(tokenGrid);
+        }
         boardManager = new BoardManager(boardPosition, tokenGrid, match3Game.match3Assets);
         scoreManager = new ScoreManager(scorePosition, boardManager, match3Game.match3Assets);
         camera = new OrthographicCamera();
