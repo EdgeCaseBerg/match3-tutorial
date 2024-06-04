@@ -48,7 +48,6 @@ public class Match3Game extends Game {
 		transition.render(delta);
 
 		if (transition.isComplete()) {
-			Gdx.app.log("STACK", scenes.toString());
 			switch (transition.transitionType) {
                 case Push:
 					scenes.push(transition.to);
@@ -63,7 +62,6 @@ public class Match3Game extends Game {
             }
 			setScreen(scenes.peek());
 			transition.onEnd();
-			Gdx.app.log("STACK", scenes.toString());
 			transition = null;
 		}
 	}
