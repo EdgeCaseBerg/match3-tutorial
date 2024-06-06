@@ -144,8 +144,6 @@ public class PlayScreen extends ScreenAdapter implements Scene, EndGameSubscribe
 
     @Override
     public void notifyGameShouldEnd(GameStats gameStats) {
-        // TODO make a screen to show the end game.
-        Gdx.app.log("END", gameStats.toString());
-        match3Game.replaceSceneWith(new TitleScreen(match3Game));
+        match3Game.replaceSceneWith(new ResultsScreen(match3Game, gameStats));
     }
 }
