@@ -1,9 +1,10 @@
-package space.peetseater.game;
+package space.peetseater.game.screens;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import space.peetseater.game.DragEventSubscriber;
 
 import java.util.HashSet;
 
