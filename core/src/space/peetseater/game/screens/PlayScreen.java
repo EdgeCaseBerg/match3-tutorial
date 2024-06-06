@@ -7,7 +7,6 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import space.peetseater.game.*;
@@ -22,10 +21,9 @@ import space.peetseater.game.token.TokenGeneratorAlgorithm;
 import java.util.LinkedList;
 import java.util.List;
 
-import static space.peetseater.game.Constants.GAME_HEIGHT;
-import static space.peetseater.game.Constants.GAME_WIDTH;
+import static space.peetseater.game.Constants.*;
 
-public class PlayScreen extends ScreenAdapter implements Scene {
+public class PlayScreen extends ScreenAdapter implements Scene, EndGameSubscriber {
     private Match3Game match3Game;
     private final BoardManager boardManager;
     GameGrid<TileType> tokenGrid;
@@ -34,7 +32,6 @@ public class PlayScreen extends ScreenAdapter implements Scene {
     private final FitViewport viewport;
 
     private TokenGeneratorAlgorithm<TileType> tokenAlgorithm;
-    String algo = "WillNotMatch";
     private final DragInputAdapter dragInputAdapter;
     Match3GameState match3GameState;
     ScoreManager scoreManager;
@@ -55,12 +52,15 @@ public class PlayScreen extends ScreenAdapter implements Scene {
         }
         boardManager = new BoardManager(boardPosition, tokenGrid, match3Game.match3Assets);
         scoreManager = new ScoreManager(scorePosition, boardManager, match3Game.match3Assets);
+        scoreManager.addEndGameSubscriber(this);
         camera = new OrthographicCamera();
         viewport = new FitViewport(GAME_WIDTH, GAME_HEIGHT, camera);
         camera.setToOrtho(false);
         camera.update();
+
         this.match3GameState = new Match3GameState(boardManager, tokenGrid, tokenAlgorithm);
         this.match3GameState.addSubscriber(scoreManager);
+        this.match3GameState.addMoveSubscriber(scoreManager);
         this.dragInputAdapter = new DragInputAdapter(viewport);
         this.dragInputAdapter.addSubscriber(match3GameState);
 
@@ -74,6 +74,7 @@ public class PlayScreen extends ScreenAdapter implements Scene {
         assets.add(Match3Assets.tokens);
         assets.add(Match3Assets.scoreFont);
         assets.add(Match3Assets.bgm);
+        assets.add(Match3Assets.button9Patch);
     }
 
     @Override
@@ -81,17 +82,6 @@ public class PlayScreen extends ScreenAdapter implements Scene {
         super.render(delta);
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             match3Game.replaceSceneWith(new TitleScreen(match3Game));
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
-            tokenAlgorithm = new NextTileAlgorithms.WillNotMatch(tokenGrid);
-            algo = "WillNotMatch";
-            match3GameState.setTokenAlgorithm(tokenAlgorithm);
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
-            tokenAlgorithm = new NextTileAlgorithms.LikelyToMatch(tokenGrid);
-            algo = "LikelyToMatch";
-            match3GameState.setTokenAlgorithm(tokenAlgorithm);
         }
 
         camera.update();
@@ -103,23 +93,11 @@ public class PlayScreen extends ScreenAdapter implements Scene {
         match3Game.batch.draw(match3Game.match3Assets.getGameScreenBackground(), 0, 0, GAME_WIDTH, GAME_HEIGHT);
         boardManager.render(delta, match3Game.batch);
         scoreManager.render(delta, match3Game.batch, match3Game.font);
+        match3Game.font.draw(match3Game.batch, "Instructions",1.1f + BOARD_UNIT_WIDTH + TILE_UNIT_WIDTH, 3);
+        match3Game.font.draw(match3Game.batch, "Get to the target score\nbefore your moves run out!",1.1f + BOARD_UNIT_WIDTH, 2);
 
-        match3Game.font.draw(match3Game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, 3);
-        match3Game.font.draw(match3Game.batch, algo, 10, 2);
-        match3Game.font.draw(match3Game.batch,
-                dragInputAdapter.dragStart + " " +
-                        dragInputAdapter.dragEnd + "\n" +
-                        dragInputAdapter.getIsDragging() +
-                        " " + dragInputAdapter.getWasDragged(),
-                9, 5,
-                6f, Align.left, true
-        );
-        if (dragInputAdapter.isDragging) {
-            match3Game.font.draw(match3Game.batch,
-                    boardManager.gameXToColumn(dragInputAdapter.dragEnd.x) + " " + boardManager.gameYToRow(dragInputAdapter.dragEnd.y),
-                    9, 6,
-                    6f, Align.left, true
-            );
+        if (Gdx.input.isKeyPressed(Input.Keys.F)) {
+            match3Game.font.draw(match3Game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, 3);
         }
 
         match3Game.batch.end();
@@ -142,6 +120,8 @@ public class PlayScreen extends ScreenAdapter implements Scene {
         for (AssetDescriptor<?> asset : assets) {
             match3Game.match3Assets.unload(asset);
         }
+        match3GameState.removeMoveSubscriber(scoreManager);
+        scoreManager.removeEndGameSubscriber(this);
         scoreManager.dispose();
         boardManager.dispose();
     }
@@ -160,5 +140,12 @@ public class PlayScreen extends ScreenAdapter implements Scene {
     @Override
     public void hide() {
         Gdx.input.setInputProcessor(null);
+    }
+
+    @Override
+    public void notifyGameShouldEnd(GameStats gameStats) {
+        // TODO make a screen to show the end game.
+        Gdx.app.log("END", gameStats.toString());
+        match3Game.replaceSceneWith(new TitleScreen(match3Game));
     }
 }

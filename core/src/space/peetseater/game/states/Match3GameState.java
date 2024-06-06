@@ -8,6 +8,7 @@ import space.peetseater.game.grid.match.MatchEventPublisher;
 import space.peetseater.game.grid.match.MatchSubscriber;
 import space.peetseater.game.grid.states.BoardAcceptingMoves;
 import space.peetseater.game.grid.states.BoardState;
+import space.peetseater.game.grid.states.MoveEventSubscriber;
 import space.peetseater.game.shared.Command;
 import space.peetseater.game.tile.TileType;
 import space.peetseater.game.token.TokenGeneratorAlgorithm;
@@ -17,7 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class Match3GameState implements DragEventSubscriber, MatchEventPublisher<TileType>, MatchSubscriber<TileType> {
+public class Match3GameState implements DragEventSubscriber, MatchEventPublisher<TileType>, MatchSubscriber<TileType>, MoveEventSubscriber {
     private final BoardManager boardManager;
 
     private TokenGeneratorAlgorithm<TileType> tokenAlgorithm;
@@ -25,6 +26,7 @@ public class Match3GameState implements DragEventSubscriber, MatchEventPublisher
     private BoardState boardState;
     Queue<Command> commands;
     private final HashSet<MatchSubscriber<TileType>> subscribers;
+    private final HashSet<MoveEventSubscriber> moveEventSubscribers;
 
     public Match3GameState(BoardManager boardManager, GameGrid<TileType> gameGrid, TokenGeneratorAlgorithm<TileType> tokenAlgorithm) {
         this.boardManager = boardManager;
@@ -33,6 +35,7 @@ public class Match3GameState implements DragEventSubscriber, MatchEventPublisher
         this.boardState = new BoardAcceptingMoves(this);
         this.boardState.onEnterState(this);
         this.subscribers = new HashSet<>(1);
+        this.moveEventSubscribers = new HashSet<>();
         this.tokenAlgorithm = tokenAlgorithm;
     }
 
@@ -115,5 +118,20 @@ public class Match3GameState implements DragEventSubscriber, MatchEventPublisher
 
     public void setTokenAlgorithm(TokenGeneratorAlgorithm<TileType> tokenAlgorithm) {
         this.tokenAlgorithm = tokenAlgorithm;
+    }
+
+    @Override
+    public void onMoveComplete() {
+        for (MoveEventSubscriber moveEventSubscriber : this.moveEventSubscribers) {
+            moveEventSubscriber.onMoveComplete();
+        }
+    }
+
+    public void addMoveSubscriber(MoveEventSubscriber moveEventSubscriber) {
+        this.moveEventSubscribers.add(moveEventSubscriber);
+    }
+
+    public void removeMoveSubscriber(MoveEventSubscriber moveEventSubscriber) {
+        this.moveEventSubscribers.remove(moveEventSubscriber);
     }
 }

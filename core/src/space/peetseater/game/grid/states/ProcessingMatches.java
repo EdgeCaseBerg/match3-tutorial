@@ -132,6 +132,7 @@ public class ProcessingMatches implements BoardState, MatchEventPublisher<TileTy
             command.execute();
         }
         if (isDoneProcessing) {
+            match3GameState.onMoveComplete();
             return new BoardAcceptingMoves(match3GameState);
         }
         return this;
