@@ -67,11 +67,15 @@ public class Match3Game extends Game {
 	}
 
 	public void replaceSceneWith(Scene scene) {
-		transition = new Transition(this, TransitionType.Replace, scenes.peek(), scene);
+		if (transition == null || transition.finished) {
+			transition = new Transition(this, TransitionType.Replace, scenes.peek(), scene);
+		}
 	}
 
 	public void overlayScene(Scene scene) {
-		transition = new Transition(this, TransitionType.Push, scenes.peek(), scene);
+		if (transition == null || transition.finished) {
+			transition = new Transition(this, TransitionType.Push, scenes.peek(), scene);
+		}
 	}
 
 	public void closeOverlaidScene() {
