@@ -185,7 +185,7 @@ public class PlayScreen extends ScreenAdapter implements Scene, EndGameSubscribe
             match3Game.overlayScene(new ConfigurationScreen(match3Game));
         }
         if (menuButton == helpButton) {
-            // TODO! Overlay our new help screen here!
+            match3Game.overlayScene(new HelpScreen(match3Game));
         }
     }
 }
