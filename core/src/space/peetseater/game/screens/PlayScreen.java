@@ -2,6 +2,7 @@ package space.peetseater.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Color;
@@ -13,6 +14,9 @@ import space.peetseater.game.*;
 import space.peetseater.game.grid.BoardManager;
 import space.peetseater.game.grid.GameGrid;
 import space.peetseater.game.grid.GridSpace;
+import space.peetseater.game.screens.menu.ButtonListener;
+import space.peetseater.game.screens.menu.MenuButton;
+import space.peetseater.game.screens.menu.MenuInputAdapter;
 import space.peetseater.game.states.Match3GameState;
 import space.peetseater.game.tile.NextTileAlgorithms;
 import space.peetseater.game.tile.TileType;
@@ -123,7 +127,6 @@ public class PlayScreen extends ScreenAdapter implements Scene, EndGameSubscribe
         match3GameState.removeMoveSubscriber(scoreManager);
         scoreManager.removeEndGameSubscriber(this);
         scoreManager.dispose();
-        boardManager.dispose();
     }
 
     @Override

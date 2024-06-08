@@ -56,7 +56,7 @@ public class ConfigurationScreen extends ScreenAdapter implements Scene, ButtonL
 
         Vector2 backButtonPosition = new Vector2(menuButtonX, 2);
         Vector2 size = new Vector2(5f, match3Game.font.getLineHeight() + 0.2f);
-        backButton = new MenuButton("Back to Title", backButtonPosition, size, match3Game.match3Assets);
+        backButton = new MenuButton("Back", backButtonPosition, size, match3Game.match3Assets);
         backButton.addButtonListener(this);
 
         Vector2 difficultPosition = backButtonPosition.cpy().add(0, GAME_HEIGHT - 6);

@@ -1,8 +1,6 @@
 package space.peetseater.game;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +10,7 @@ import space.peetseater.game.grid.GridSpace;
 import space.peetseater.game.grid.match.Match;
 import space.peetseater.game.grid.match.MatchSubscriber;
 import space.peetseater.game.grid.states.MoveEventSubscriber;
+import space.peetseater.game.screens.menu.BackgroundPanel;
 import space.peetseater.game.shared.MovablePoint;
 import space.peetseater.game.tile.TileGraphic;
 import space.peetseater.game.tile.TileType;
@@ -26,9 +25,9 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable, Move
     private final ScoringCalculator scoringCalculator;
     private final MovablePoint movablePoint;
     private final BoardManager boardManager;
-    private final Texture texture;
     private final LinkedList<TileGraphic> inFlightMatches;
     private final Match3Assets match3Assets;
+    private final BackgroundPanel bg;
     private int movesCompleted;
     private int movesToGo;
     private int targetScore;
@@ -39,11 +38,18 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable, Move
         inFlightMatches = new LinkedList<>();
         this.movablePoint = new MovablePoint(position);
         endGameSubscribers = new HashSet<>(1);
+        this.bg = new BackgroundPanel(
+            position.cpy().sub(0, 1 + Constants.BOARD_UNIT_GUTTER * 2),
+            new Vector2(
+                5,
+                Constants.SCORE_UNIT_HEIGHT * 2 + Constants.BOARD_UNIT_GUTTER
+            ),
+            match3Assets
+        );
         // TODO I don't like that I take this in to calc where to start
         // the tile graphics in flight path to the board. We can revisit
         // this after making some form of class for the match particles
         this.boardManager = boardManager;
-        this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
         this.match3Assets = match3Assets;
         movesCompleted = 0;
         movesToGo = 20;
@@ -52,13 +58,7 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable, Move
     public void render(float delta, SpriteBatch spriteBatch, BitmapFont bitmapFont) {
         float cornerX = movablePoint.getPosition().x;
         float cornerY = movablePoint.getPosition().y;
-        spriteBatch.draw(
-                texture,
-                cornerX,
-                cornerY - Constants.SCORE_UNIT_HEIGHT,
-                Constants.SCORE_UNIT_WIDTH,
-                Constants.SCORE_UNIT_HEIGHT * 2
-        );
+        bg.render(delta, spriteBatch);
         bitmapFont.draw(
                 spriteBatch,
                 "Score: " + scoringCalculator.getScore() +
@@ -119,7 +119,6 @@ public class ScoreManager implements MatchSubscriber<TileType>, Disposable, Move
 
     @Override
     public void dispose() {
-        this.texture.dispose();
         this.endGameSubscribers.clear();
     }
 

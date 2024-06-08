@@ -1,8 +1,6 @@
 package space.peetseater.game.grid;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -10,7 +8,7 @@ import com.badlogic.gdx.utils.Disposable;
 import space.peetseater.game.Constants;
 import space.peetseater.game.GameSettings;
 import space.peetseater.game.Match3Assets;
-import space.peetseater.game.TestTexture;
+import space.peetseater.game.screens.menu.BackgroundPanel;
 import space.peetseater.game.shared.MovablePoint;
 import space.peetseater.game.shared.commands.MoveTowards;
 import space.peetseater.game.tile.TileGraphic;
@@ -22,15 +20,15 @@ import java.util.List;
 
 import static space.peetseater.game.Constants.*;
 
-public class BoardManager implements Disposable {
+public class BoardManager {
     public final Match3Assets match3Assets;
     protected MovablePoint movablePoint;
-    private final Texture texture;
+    private final BackgroundPanel bg;
     public final GameGrid<TileGraphic> gameGrid;
     public BoardManager(final Vector2 position, GameGrid<TileType> sourceOfTruth, Match3Assets match3Assets) {
         this.movablePoint = new MovablePoint(position);
         this.match3Assets = match3Assets;
-        this.texture = TestTexture.makeTexture(new Color(1, 1, 1, 0.5f));
+        this.bg = new BackgroundPanel(position, new Vector2(BOARD_UNIT_WIDTH, BOARD_UNIT_HEIGHT), match3Assets);
         this.gameGrid = new GameGrid<>(sourceOfTruth.getWidth(), sourceOfTruth.getHeight());
         initializeGrid(sourceOfTruth);
     }
@@ -66,7 +64,7 @@ public class BoardManager implements Disposable {
 
     public void render(float delta, SpriteBatch batch) {
         update(delta);
-        batch.draw(texture, movablePoint.getPosition().x, movablePoint.getPosition().y, BOARD_UNIT_WIDTH, BOARD_UNIT_HEIGHT);
+        bg.render(delta, batch);
         for (GridSpace<TileGraphic> tileGraphicGridSpace : gameGrid) {
             if (tileGraphicGridSpace.isFilled()) {
                 TileGraphic tileGraphic = tileGraphicGridSpace.getValue();
@@ -176,10 +174,5 @@ public class BoardManager implements Disposable {
 
     public TileGraphic getTile(int row, int column) {
         return this.gameGrid.getTile(row, column).getValue();
-    }
-
-    @Override
-    public void dispose() {
-        texture.dispose();
     }
 }
