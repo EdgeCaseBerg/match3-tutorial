@@ -44,9 +44,10 @@ public class ScoringCalculator {
             }
             for (TileType tileType : match.getValues()) {
                 switch (tileType) {
-                    case LowValue: matchScore += 1; break;
-                    case MidValue: matchScore += 2; break;
-                    case HighValue: matchScore += 3; break;
+                    case LowValue:
+                    case MidValue:
+                    case HighValue:
+                        matchScore += TileType.scoreFor(tileType); break;
                     case Negative:
                         negativeScore += 2;
                         break;

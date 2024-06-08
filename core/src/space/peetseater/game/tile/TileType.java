@@ -1,7 +1,5 @@
 package space.peetseater.game.tile;
 
-import com.badlogic.gdx.graphics.Color;
-
 public enum TileType {
     LowValue,
     MidValue,
@@ -9,19 +7,19 @@ public enum TileType {
     Multiplier,
     Negative;
 
-    static public Color colorFor(TileType tileType) {
+    static public int scoreFor(TileType tileType) {
         switch (tileType) {
             case LowValue:
-                return Color.GREEN;
+                return 1;
             case MidValue:
-                return Color.BLUE;
+                return 2;
             case HighValue:
-                return  Color.RED;
+                return 3;
             case Multiplier:
-                return Color.YELLOW;
+                return 0;
             case Negative:
-                return Color.BROWN;
+                return -2;
         }
-        return Color.CHARTREUSE;
+        return 0;
     }
 }
