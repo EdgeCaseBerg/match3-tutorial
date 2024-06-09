@@ -10,7 +10,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setWindowedMode(Constants.GAME_WIDTH * 72, Constants.GAME_HEIGHT * 72);
-		config.setTitle("Match3Tutorial");
+		config.setTitle("Relax n Match");
 		new Lwjgl3Application(new Match3Game(), config);
 	}
 }
